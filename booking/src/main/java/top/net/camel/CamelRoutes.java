@@ -1,4 +1,4 @@
-package top.nextnet.camel;
+package top.net.camel;
 
 import fr.pantheonsorbonne.ufr27.miage.dto.Booking;
 import fr.pantheonsorbonne.ufr27.miage.dto.CancelationNotice;
@@ -14,8 +14,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 
-import top.nextnet.cli.UserInterface;
-import top.nextnet.service.TicketingService;
+import top.net.cli.UserInterface;
+import top.net.service.TicketingService;
 
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public class CamelRoutes extends RouteBuilder {
     String smtpFrom;
 
     @Inject
-    top.nextnet.camel.handler.BookingResponseHandler BookingResponseHandler;
+    top.net.camel.handler.BookingResponseHandler BookingResponseHandler;
 
     @Inject
     TicketingService ticketingService;

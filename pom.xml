@@ -11,6 +11,7 @@
     <module>ticket-master</module>
     <module>ticket-vendor</module>
     <module>ticket-commons</module>
+    <module>booking</module>
   </modules>
   <dependencyManagement>
     <dependencies>
