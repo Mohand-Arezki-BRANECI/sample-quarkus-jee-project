@@ -5,14 +5,17 @@ import fr.pantheonsorbonne.ufr27.miage.dto.Booking;
 import fr.pantheonsorbonne.ufr27.miage.dto.Gig;
 
 import fr.pantheonsorbonne.ufr27.miage.dto.HotelLocation;
+import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import top.net.resource.BankService;
 import top.net.resource.LocationService;
 import top.net.resource.VendorService;
+import jakarta.ws.rs.core.Response;
 
 
 
@@ -31,6 +34,10 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     @Inject
     @RestClient
     LocationService locationService;
+
+    @Inject
+    @RestClient
+    BankService bankService;
 
 
 
@@ -57,6 +64,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         String hotelName = textIO.newStringInputReader().withPossibleValues(locationService.getHotelLocations().stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
     }
 
+
     public Booking getBookingFromOperator(){
         terminal.println("Which Gig to book?");
 
@@ -65,6 +73,24 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         Integer standingCount = textIO.newIntInputReader().read("How many pit tickets?");
 
         return new Booking(vendorId,venueId,standingCount,sittingCount);
+    }
+
+    public void sendPayment(){
+        terminal.println("We received the following transaction Request in your name from Booking: SHOW STUFF");
+        terminal.println("To authorise the transaction pleas login to your MIAGE bank account!");
+
+        String email = textIO.newStringInputReader().read("Please insert Account email: ");
+        String password = textIO.newStringInputReader().read("Passwort:  ");
+
+        TransactionDTO transaction = new TransactionDTO(email,password,1,1,100);
+
+
+        try {
+           Response response = bankService.createTransaction(transaction);
+        }  catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
