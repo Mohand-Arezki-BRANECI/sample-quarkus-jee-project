@@ -7,24 +7,47 @@ import jakarta.persistence.*;
 public class BankTransfer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transaction_id", nullable = false)
-    private Long transaction_id;
+    @Column(name = "transactionId", nullable = false)
+    private Long transactionId;
 
-    @Column(name = "from_account", nullable = false)
-    private long from_account;
+    @Column(name = "fromAccountId", nullable = false)
+    private long fromAccountId;
 
-    @Column(name = "to_account", nullable = false)
-    private long to_account;
+    @Column(name = "fromBankId", nullable = false)
+    private long fromBankId;
+
+    @Column(name = "toAccountId", nullable = false)
+    private long toAccountId;
+
+    @Column(name = "toBankId", nullable = false)
+    private long toBankId;
 
     @Column(name = "amount", nullable = false)
-    private long amount;
+    private double amount;
 
-    @Column(name = "to_account_bank_id", nullable = false)
-    private long to_account_bank_id;
-
-    public Long getTransaction_id() {
-        return transaction_id;
+    public void setFromBankId(long fromBankId) {
+        this.fromBankId = fromBankId;
     }
 
+    public void setFromAccountId(long fromAccount) {
+        this.fromAccountId = fromAccount;
+    }
+
+    public void setToAccountId(long toAccount) {
+        this.toAccountId = toAccount;
+    }
+
+    public void setToBankId(long toBankId) {
+        this.toBankId = toBankId;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public Long getTransactionId() {
+        return transactionId;
+    }
 }
+
 

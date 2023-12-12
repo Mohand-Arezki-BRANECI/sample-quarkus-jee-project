@@ -25,17 +25,19 @@ public class Account {
     @Column(name = "password", nullable = false, length = 45)
     private String password;
 
-    @Column(name = "bankId", nullable = false, length = 45)
-    private String bankId;
 
     @Column(name = "balance", nullable = false, length = 45)
-    private String balance;
+    private double balance;
+
+    @ManyToOne
+    @JoinColumn(name = "bankId", nullable = false)
+    private Bank bank;
 
     public Integer getAccount_id() {
         return accountId;
     }
 
-    public String getBalance() {
+    public double getBalance() {
         return balance;
     }
 
@@ -47,7 +49,11 @@ public class Account {
         return password;
     }
 
-    public void setBalance(String balance) {
+    public Bank getBank() {
+        return bank;
+    }
+
+    public void setBalance(double balance) {
         this.balance = balance;
     }
 }

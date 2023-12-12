@@ -3,10 +3,15 @@ package fr.pantheonsorbonne.ufr27.miage.dto;
 public class TransactionDTO {
     private String email;
     private String password;
-    private long toAccount;
+    private long toAccountId;
 
-    private long bankId;
+    private long toBankId;
 
+
+
+    private long fromAccountId;
+
+    private long fromBankId;
     private double amount;
 
     // Constructors
@@ -15,12 +20,15 @@ public class TransactionDTO {
         // Default constructor
     }
 
-    public TransactionDTO(String email, String password, long toAccount, long bankId, double amount) {
+    public TransactionDTO(String email, String password, long toAccount, long toBankId, long fromAccount, long fromBankId, double amount) {
         this.email = email;
         this.password = password;
-        this.toAccount = toAccount;
-        this.bankId = bankId;
+        this.toAccountId = toAccount;
+        this.toBankId = toBankId;
+        this.fromBankId = fromBankId;
+        this.fromAccountId = fromAccount;
         this.amount = amount;
+
     }
 
     // Getters and Setters
@@ -41,20 +49,20 @@ public class TransactionDTO {
         this.password = password;
     }
 
-    public long getToAccount() {
-        return toAccount;
+    public long getToAccountId() {
+        return toAccountId;
     }
 
-    public void setToAccount(long toAccount) {
-        this.toAccount = toAccount;
+    public void setToAccountId(long toAccountId) {
+        this.toAccountId = toAccountId;
     }
 
-    public long getBankId() {
-        return bankId;
+    public long getToBankId() {
+        return toBankId;
     }
 
-    public void setBankId(long bankId) {
-        this.bankId = bankId;
+    public void setToBankId(long bankId) {
+        this.toBankId = bankId;
     }
 
     public double getAmount() {
@@ -64,4 +72,21 @@ public class TransactionDTO {
     public void setAmount(double amount) {
         this.amount = amount;
     }
+
+    public long getFromAccountId() {
+        return fromAccountId;
+    }
+
+    public void setFromAccountId(long fromAccountId) {
+        this.fromAccountId = fromAccountId;
+    }
+
+    public long getFromBankId() {
+        return fromBankId;
+    }
+
+    public void setFromBankId(long fromBankId) {
+        this.fromBankId = fromBankId;
+    }
 }
+

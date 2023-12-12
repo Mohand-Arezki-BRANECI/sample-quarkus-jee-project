@@ -3,7 +3,9 @@ package fr.pantheonsorbonne.ufr27.miage.resources;
 
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import fr.pantheonsorbonne.ufr27.miage.exception.AccountNotFoundException;
+import fr.pantheonsorbonne.ufr27.miage.exception.NotEnoughMoneyException;
 import fr.pantheonsorbonne.ufr27.miage.model.Account;
+import fr.pantheonsorbonne.ufr27.miage.model.Bank;
 import fr.pantheonsorbonne.ufr27.miage.service.BankService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -14,7 +16,7 @@ import jakarta.ws.rs.core.Response;
 public class BankResource {
 
     @Inject
-    protected BankService accountService;
+    protected BankService service;
 
     @Path("createTransaction")
     @POST
@@ -23,16 +25,44 @@ public class BankResource {
         // Validate user credentials and perform transaction creation logic
         String email = request.getEmail();
         String password = request.getPassword();
-        long toAccount = request.getToAccount();
-        long bankId = request.getBankId();
+        long toAccount = request.getToAccountId();
+        long toBankId = request.getToBankId();
         double amount = request.getAmount();
 
 
 
         // Perform authentication and transaction creation logic here
-        // get BankAccount
+
         try {
-            Account fromAccount = accountService.getAccountByEmailAndPassword(email, password);
+            // get BankAccount
+            Account fromAccount = service.getAccountByEmailAndPassword(email, password);
+
+            // check if enough funds
+            double fromAccountBalance = fromAccount.getBalance();
+            if(fromAccountBalance < amount){
+                throw new NotEnoughMoneyException("Your balance is not sufficient to pay the bill.");
+            }
+
+            Bank testBank = fromAccount.getBank();
+
+            // do the transfer
+            // deduct amount from balance
+            fromAccount.setBalance(fromAccountBalance-amount);
+            service.changeAccountBalance(fromAccount);
+
+            // add transaction
+            TransactionDTO bankToBankTransaction = new TransactionDTO(email,password,toAccount,toBankId,fromAccount.getAccount_id(), fromAccount.getBank().getBankId(), amount);
+            service.addTransaction(bankToBankTransaction);
+
+            //TODO: Add transaction on JMS to tell other bank that a transaction as been performed and add the amount in the transaction to the account
+
+
+            // For demonstration purposes, returning a simple response
+            String responseMessage = "Transaction created successfully for toAccount number: " + fromAccount.getBank().getBankname();
+            return Response.status(Response.Status.OK)
+                    .entity(responseMessage)
+                    .build();
+
 
         }catch (AccountNotFoundException e){
             System.out.println(e.getMessage());
@@ -40,13 +70,15 @@ public class BankResource {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(responseMessage)
                     .build();
+        } catch (NotEnoughMoneyException e) {
+            System.out.println(e.getMessage());
+            String responseMessage = e.getMessage();
+            return Response.status(Response.Status.PAYMENT_REQUIRED)
+                    .entity(responseMessage)
+                    .build();
         }
 
 
-        // For demonstration purposes, returning a simple response
-        String responseMessage = "Transaction created successfully for toAccount number: " + toAccount;
-        return Response.status(Response.Status.OK)
-                .entity(responseMessage)
-                .build();
+
     }
 }

@@ -87,7 +87,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         String password = textIO.newStringInputReader().read("Passwort:  ");
 
 
-        TransactionDTO transaction = new TransactionDTO(email,password,1,1,100);
+        TransactionDTO transaction = new TransactionDTO(email,password,2,2,0,0,100);
 
 
         try {
