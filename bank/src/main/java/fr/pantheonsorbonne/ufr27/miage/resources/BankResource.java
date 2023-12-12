@@ -2,6 +2,7 @@ package fr.pantheonsorbonne.ufr27.miage.resources;
 
 
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
+import fr.pantheonsorbonne.ufr27.miage.exception.AccountNotFoundException;
 import fr.pantheonsorbonne.ufr27.miage.model.Account;
 import fr.pantheonsorbonne.ufr27.miage.service.BankService;
 import jakarta.inject.Inject;
@@ -13,7 +14,7 @@ import jakarta.ws.rs.core.Response;
 public class BankResource {
 
     @Inject
-    protected BankService service;
+    protected BankService accountService;
 
     @Path("createTransaction")
     @POST
@@ -30,10 +31,22 @@ public class BankResource {
 
         // Perform authentication and transaction creation logic here
         // get BankAccount
-        Account fromAccount = service.getAccountByEmailAndPassword(email, password);
+        try {
+            Account fromAccount = accountService.getAccountByEmailAndPassword(email, password);
+
+        }catch (AccountNotFoundException e){
+            System.out.println(e.getMessage());
+            String responseMessage = e.getMessage();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(responseMessage)
+                    .build();
+        }
+
 
         // For demonstration purposes, returning a simple response
         String responseMessage = "Transaction created successfully for toAccount number: " + toAccount;
-        return Response.ok(responseMessage).build();
+        return Response.status(Response.Status.OK)
+                .entity(responseMessage)
+                .build();
     }
 }

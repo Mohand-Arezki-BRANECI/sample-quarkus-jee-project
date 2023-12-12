@@ -8,6 +8,8 @@ import fr.pantheonsorbonne.ufr27.miage.dto.HotelLocation;
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -21,6 +23,8 @@ import jakarta.ws.rs.core.Response;
 
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -82,13 +86,17 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         String email = textIO.newStringInputReader().read("Please insert Account email: ");
         String password = textIO.newStringInputReader().read("Passwort:  ");
 
+
         TransactionDTO transaction = new TransactionDTO(email,password,1,1,100);
 
 
         try {
-           Response response = bankService.createTransaction(transaction);
-        }  catch (Exception e) {
-            e.printStackTrace();
+            Response response = bankService.createTransaction(transaction);
+            terminal.println(response.readEntity(String.class));
+
+        } catch (WebApplicationException e) {
+            String respStr = e.getResponse().readEntity(String.class);
+            terminal.println(respStr);
         }
 
     }

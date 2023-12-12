@@ -20,7 +20,7 @@ public class Account {
     @Column(name = "ownerLastName", nullable = false, length = 45)
     private String ownerLastName;
 
-    @Column(name = "email", nullable = false, length = 45)
+        @Column(name = "email", nullable = false, length = 45)
     private String email;
     @Column(name = "password", nullable = false, length = 45)
     private String password;
