@@ -30,8 +30,9 @@ public class CamelRoutes extends RouteBuilder {
 
         from("direct:sendTransactionToAllBanks")//
                 .marshal().json()
+                .log("${body}")
                 .to("sjms2:" + jmsPrefix + "bankService?exchangePattern=InOut")
-                        .log("Transaction successfully sent to all available banks.");
+                        .log("Transaction ${body} successfully sent to all available banks.");
 
         from("sjms2:" + jmsPrefix + "bankService?exchangePattern=InOut")
                 .unmarshal().json(TransactionDTO.class)
