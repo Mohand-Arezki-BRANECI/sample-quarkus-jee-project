@@ -1,6 +1,8 @@
 package fr.pantheonsorbonne.ufr27.miage.model;
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Table(name = "Hotel")
 @Entity
 
@@ -9,6 +11,19 @@ public class Hotel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "hotelId", nullable = false)
     private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "locationId")
+    private HotelLocation hotelLocation;
+    @ManyToMany
+    @JoinTable(name="HotelOptions")
+    private Set<HotelOption> options;
+    public Set<HotelOption> getOptions() {
+        return options;
+    }
+    public void setOptions(Set<HotelOption> options) {
+        this.options= options;
+    }
     @Column(name = "hotelName", nullable = false, length = 45)
     private String hotelName;
 
@@ -25,6 +40,8 @@ public class Hotel {
     public void setHotelName(String hotelName) {
         this.hotelName = hotelName;
     }
+    public HotelLocation getHotelLocation(){return hotelLocation;}
+    public void setHotelLocation(HotelLocation hotelLocation){this.hotelLocation = hotelLocation;}
 
 
 

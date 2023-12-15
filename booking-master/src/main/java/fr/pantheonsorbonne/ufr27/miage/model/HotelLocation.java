@@ -13,21 +13,18 @@ import jakarta.persistence.*;
 public class HotelLocation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idLocation", nullable = false)
+    @Column(name = "locationId", nullable = false)
     private Integer id;
-
     @Column(name = "locationName", nullable = false, length = 45)
     private String locationName;
     @Column(name = "latitude", nullable = false, length = 45)
     private String latitude;
-
     @Column(name = "longitude", nullable = false, length = 45)
     private String longitude;
 
     public String getLocationName() {
         return locationName;
     }
-
     public void setLocationName(String name) {
         this.locationName = name;
     }
@@ -35,7 +32,6 @@ public class HotelLocation {
     public Integer getId() {
         return id;
     }
-
     public void setId(Integer id) {
         this.id = id;
     }
