@@ -19,7 +19,10 @@ import jakarta.ws.rs.core.Response;
 
 
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,15 +44,14 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     BankService bankService;
 
 
-
     TextTerminal<?> terminal;
     TextIO textIO;
 
     @ConfigProperty(name = "fr.pantheonsorbonne.ufr27.miage.vendorId")
     Integer vendorId;
 
-    public void displayAvailableGigsToCli(){
-        terminal.println("VendorId="+vendorId);
+    public void displayAvailableGigsToCli() {
+        terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
             terminal.println("[" + gig.getVenueId() + "] " + gig.getArtistName() + " " + gig.getDate().format(DateTimeFormatter.ISO_DATE) + " " + gig.getLocation());
         }
@@ -64,6 +66,55 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
         String hotelName = textIO.newStringInputReader().withPossibleValues(locationService.getHotelLocations().stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
     }
+
+    public void askForNumberOfGuests() {
+        Integer nbGuests = textIO.newIntInputReader().read("How many guests?");
+    }
+
+    public void askForDates() throws ParseException {
+
+        String startDateString = textIO.newStringInputReader().read("Specify start date (yyyy-MM-dd) : ");
+        String endDateString = textIO.newStringInputReader().read("Specify end date (yyyy-MM-dd) : ");
+
+        if (!isValidDateFormat(startDateString) || !isValidDateFormat(endDateString)) {
+            terminal.println("Veuillez entrer des dates valides au format yyyy-MM-dd.");
+            return;
+        }
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date startDate = dateFormat.parse(startDateString);
+            Date endDate = dateFormat.parse(endDateString);
+            Date today = new Date();
+
+            if (startDate.before(today)) {
+                terminal.println("La date de début ne peut pas être dans le passe.");
+                return;
+            }
+
+            if (endDate.before(startDate)) {
+                terminal.println("La date de fin ne peut pas être antérieure à la date de début.");
+                return;
+            }
+
+    }catch (ParseException e) {
+            terminal.println("Une erreur s'est produite lors de l'analyse des dates.");
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isValidDateFormat(String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+
+        try {
+            dateFormat.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+    }
+
 
 
     public Booking getBookingFromOperator(){
@@ -126,7 +177,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println(errorMessage);
         terminal.getProperties().setPromptColor(Color.white);
     }
-
 
     @Override
     public void showSuccessMessage(String s) {
