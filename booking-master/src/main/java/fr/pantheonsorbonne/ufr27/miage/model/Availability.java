@@ -5,7 +5,14 @@ import java.util.Date;
 
 @Table(name = "Availability")
 @Entity
-
+@NamedQueries({
+        @NamedQuery(
+                name = "findByDateAndGuests",
+                query ="SELECT a.hotel FROM Availability a " +
+                        "WHERE a.date = :date " +
+                        "AND a.numberFreeRooms >= :numberOfGuests"
+        ),
+})
 public class Availability {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

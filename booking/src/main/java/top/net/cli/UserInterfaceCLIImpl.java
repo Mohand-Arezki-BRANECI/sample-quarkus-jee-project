@@ -11,6 +11,7 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import top.net.resource.AvailabilityService;
 import top.net.resource.BankService;
 import top.net.resource.LocationService;
 import top.net.resource.VendorService;
@@ -41,6 +42,11 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     @Inject
     @RestClient
+    AvailabilityService availabilityService;
+    
+    
+    @Inject
+    @RestClient
     BankService bankService;
 
 
@@ -49,7 +55,11 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     @ConfigProperty(name = "fr.pantheonsorbonne.ufr27.miage.vendorId")
     Integer vendorId;
-
+    
+    private Date startDate;
+    private Date endDate;
+    private int nbGuests;
+    
     public void displayAvailableGigsToCli() {
         terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
@@ -67,8 +77,20 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         String hotelName = textIO.newStringInputReader().withPossibleValues(locationService.getHotelLocations().stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
     }
 
+
+    public void askForHotel(){
+        terminal.println("find hotel for you");
+        /*for(Availability availability: availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDate, this.endDate)){
+            terminal.println("this.nbGuests---->" + this.nbGuests);
+            terminal.println("this.startDate---->" + this.startDate);
+            terminal.println("this.endDate---->" + this.endDate);
+            terminal.println("[" + availability.getNumberFreeRooms());
+        }*/
+    }
+    
     public void askForNumberOfGuests() {
-        Integer nbGuests = textIO.newIntInputReader().read("How many guests?");
+        this.nbGuests = textIO.newIntInputReader().read("How many guests?");
+
     }
 
     public void askForDates() throws ParseException {
@@ -83,16 +105,16 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            Date startDate = dateFormat.parse(startDateString);
-            Date endDate = dateFormat.parse(endDateString);
+             this.startDate = dateFormat.parse(startDateString);
+            this.endDate = dateFormat.parse(endDateString);
             Date today = new Date();
 
-            if (startDate.before(today)) {
+            if (this.startDate.before(today)) {
                 terminal.println("La date de début ne peut pas être dans le passe.");
                 return;
             }
 
-            if (endDate.before(startDate)) {
+            if (this.endDate.before(this.startDate)) {
                 terminal.println("La date de fin ne peut pas être antérieure à la date de début.");
                 return;
             }
@@ -101,6 +123,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             terminal.println("Une erreur s'est produite lors de l'analyse des dates.");
             e.printStackTrace();
         }
+
     }
 
     private boolean isValidDateFormat(String date) {
@@ -114,7 +137,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             return false;
         }
     }
-
 
 
     public Booking getBookingFromOperator(){
@@ -163,8 +185,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
 
     }
-
-
+    
     @Override
     public void accept(TextIO textIO, RunnerData runnerData) {
         this.textIO = textIO;

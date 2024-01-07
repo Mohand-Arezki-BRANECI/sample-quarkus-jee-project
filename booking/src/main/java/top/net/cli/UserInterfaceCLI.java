@@ -7,12 +7,14 @@ import java.util.function.BiConsumer;
 
 public interface UserInterfaceCLI extends BiConsumer<TextIO, RunnerData>, UserInterface {
 
-    void displayAvailableGigsToCli();
 
-    void askForHotelLocation();
 
     // booking-cli
+    void displayAvailableGigsToCli();
+    void askForHotelLocation();
     void askForDates() throws ParseException;
+    void askForNumberOfGuests();
+    void askForHotel();
 
     // bank
     void sendPayment();
