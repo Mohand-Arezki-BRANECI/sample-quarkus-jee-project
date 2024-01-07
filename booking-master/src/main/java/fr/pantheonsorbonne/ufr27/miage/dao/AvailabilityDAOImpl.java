@@ -9,6 +9,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 @ApplicationScoped
@@ -39,7 +40,7 @@ public class AvailabilityDAOImpl implements AvailabilityDAO{
         return availableHotels;
     }*/
     @Override
-    public List<Availability> getAvailableHotelsForDate(int numberOfGuests, Date date) {
+    public Collection<Availability> getAvailableHotelsForDate(int numberOfGuests, Date date) {
 
         TypedQuery<Availability> query = entityManager.createNamedQuery("findByDateAndGuests", Availability.class);
         query.setParameter("date", date);

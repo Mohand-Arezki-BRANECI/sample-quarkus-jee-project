@@ -22,21 +22,9 @@ public class AvailabilityServiceImp implements AvailabilityService  {
     public List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, Date startDate, Date endDate) {
         ArrayList<Hotel> availableHotels = new ArrayList<>();
 
-      List initialAvailableHotels = availabilityDAO.getAvailableHotelsForDate(numberOfGuests, startDate);
-
-        /*List<Availability> initialAvailableHotels = availabilityDAO.getAvailableHotelsForDate(numberOfGuests, startDate);
-        availableHotels.addAll(initialAvailableHotels); */
-
-
-        for (Object initAv : initialAvailableHotels) {
-            if (initAv instanceof Availability availability) {
-                Hotel hotel = new Hotel(availability.getHotel().getHotelName());
-                // Your further processing with the 'hotel' object
+        for (Availability initAv :  availabilityDAO.getAvailableHotelsForDate(numberOfGuests, startDate)) {
+                Hotel hotel = new Hotel(initAv.getHotel().getHotelName());
                 availableHotels.add(hotel);
-            }
-
-            //availableHotels.add(new fr.pantheonsorbonne.ufr27.miage.dto.Availability(initAv.getBedsNumber(), initAv.getNumberFreeRooms(), hotel, initAv.getDate()));
-
         }
         Date currentDate = new Date(startDate.getTime());
         while (!currentDate.after(endDate)) {

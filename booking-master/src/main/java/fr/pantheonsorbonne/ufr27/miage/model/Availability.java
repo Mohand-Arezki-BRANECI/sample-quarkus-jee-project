@@ -8,7 +8,7 @@ import java.util.Date;
 @NamedQueries({
         @NamedQuery(
                 name = "findByDateAndGuests",
-                query ="SELECT a.hotel FROM Availability a " +
+                query ="SELECT a FROM Availability a " +
                         "WHERE a.date = :date " +
                         "AND a.bedsNumber >= :numberOfGuests"
         ),
