@@ -43,8 +43,8 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     @Inject
     @RestClient
     AvailabilityService availabilityService;
-    
-    
+
+
     @Inject
     @RestClient
     BankService bankService;
@@ -55,11 +55,11 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     @ConfigProperty(name = "fr.pantheonsorbonne.ufr27.miage.vendorId")
     Integer vendorId;
-    
+
     private Date startDate;
     private Date endDate;
     private int nbGuests;
-    
+
     public void displayAvailableGigsToCli() {
         terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
@@ -79,15 +79,19 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
 
     public void askForHotel(){
-        terminal.println("find hotel for you");
-        /*for(Availability availability: availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDate, this.endDate)){
+        terminal.print("!!!");
+        terminal.println("find hotel for you !!!"+  this.nbGuests);
+        terminal.println("this.nbGuests" + this.nbGuests);
+        terminal.println("this.startDate---->" + this.startDate);
+        terminal.println("this.endDate---->" + this.endDate);
+
+        List<fr.pantheonsorbonne.ufr27.miage.dto.Hotel> hotels = availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDate, this.endDate);
+        /*for(Hotel hotel: availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDate, this.endDate)){
             terminal.println("this.nbGuests---->" + this.nbGuests);
             terminal.println("this.startDate---->" + this.startDate);
             terminal.println("this.endDate---->" + this.endDate);
-            terminal.println("[" + availability.getNumberFreeRooms());
         }*/
     }
-    
     public void askForNumberOfGuests() {
         this.nbGuests = textIO.newIntInputReader().read("How many guests?");
 
@@ -185,7 +189,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
 
     }
-    
+
     @Override
     public void accept(TextIO textIO, RunnerData runnerData) {
         this.textIO = textIO;

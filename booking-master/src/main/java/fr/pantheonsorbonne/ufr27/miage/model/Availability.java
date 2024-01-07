@@ -10,7 +10,7 @@ import java.util.Date;
                 name = "findByDateAndGuests",
                 query ="SELECT a.hotel FROM Availability a " +
                         "WHERE a.date = :date " +
-                        "AND a.numberFreeRooms >= :numberOfGuests"
+                        "AND a.bedsNumber >= :numberOfGuests"
         ),
 })
 public class Availability {

@@ -15,6 +15,6 @@ public interface AvailabilityService {
 
     @Path("availability")
     @GET
-    List<Availability> getConsistentlyAvailableHotels(int numberOfGuests, Date startDate, Date endDate);
+    List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, Date startDate, Date endDate);
 
 }
