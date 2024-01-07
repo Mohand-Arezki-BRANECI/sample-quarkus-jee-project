@@ -1,31 +1,43 @@
 package fr.pantheonsorbonne.ufr27.miage.resources;
 
-import fr.pantheonsorbonne.ufr27.miage.dto.Availability;
 import fr.pantheonsorbonne.ufr27.miage.dto.Hotel;
+import fr.pantheonsorbonne.ufr27.miage.model.Availability;
 import fr.pantheonsorbonne.ufr27.miage.service.AvailabilityService;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 @Path("/hotelAvailability")
 public class AvailabilityRessource {
+
+
     @Inject
     protected AvailabilityService service;
 
     @Path("availability")
     @GET
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, Date startDate, Date endDate) {
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<Hotel> getConsistentlyAvailableHotels(
+            @QueryParam("numberOfGuests") Integer numberOfGuests,
+            @QueryParam("startDate") String startDate,
+            @QueryParam("endDate") String endDate) {
 
-        List<fr.pantheonsorbonne.ufr27.miage.dto.Hotel> availability = service.getConsistentlyAvailableHotels(numberOfGuests, startDate, endDate);
-        return availability;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        try {
+            Date start = dateFormat.parse(startDate);
+            Date end = dateFormat.parse(endDate);
+            return service.getConsistentlyAvailableHotels(numberOfGuests, start, end);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
 

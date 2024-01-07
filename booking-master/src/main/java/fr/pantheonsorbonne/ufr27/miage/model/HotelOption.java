@@ -12,15 +12,6 @@ public class HotelOption {
     private Integer id;
 
     @ManyToMany(mappedBy="options")
-    private Set<Hotel> hotels;
-    public Set<Hotel> getHotels() {
-        return hotels;
-    }
-    public void setHotels(Set<Hotel> hotels) {
-        this.hotels= hotels;
-    }
-
-    @ManyToMany(mappedBy="options")
     private Set<Reservation> reservations;
     public Set<Reservation> getReservations() {
         return reservations;
