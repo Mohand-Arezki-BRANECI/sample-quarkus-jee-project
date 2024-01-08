@@ -78,13 +78,14 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
 
     public void askForHotel(){
-        terminal.print("!!!");
-        terminal.println("find hotel for you !!!"+  this.nbGuests);
-        terminal.println("this.nbGuests" + this.nbGuests);
+
         terminal.println("this.startDate---->" + this.startDateString);
         terminal.println("this.endDate---->" + this.endDateString);
+        terminal.println("Type de this.endDateString : " + this.endDateString.getClass().getName());
+
 
         for (Hotel hotel : availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString)) {
+            terminal.println("ajung aici");
             terminal.println("[" + hotel.getHotelName()+ "] " );
         }
     }

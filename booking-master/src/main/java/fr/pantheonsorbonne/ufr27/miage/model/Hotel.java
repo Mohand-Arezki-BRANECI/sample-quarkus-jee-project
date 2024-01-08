@@ -15,7 +15,15 @@ public class Hotel {
     @ManyToOne
     @JoinColumn(name = "locationId")
     private HotelLocation hotelLocation;
-
+    @ManyToMany
+    @JoinTable(name="HotelOptions")
+    private Set<HotelOption> options;
+    public Set<HotelOption> getOptions() {
+        return options;
+    }
+    public void setOptions(Set<HotelOption> options) {
+        this.options= options;
+    }
     @Column(name = "hotelName", nullable = false, length = 45)
     private String hotelName;
 
@@ -25,7 +33,6 @@ public class Hotel {
     public void setId(Integer id) {
         this.id = id;
     }
-
     public String getHotelName() {
         return hotelName;
     }
@@ -34,7 +41,6 @@ public class Hotel {
     }
     public HotelLocation getHotelLocation(){return hotelLocation;}
     public void setHotelLocation(HotelLocation hotelLocation){this.hotelLocation = hotelLocation;}
-
 
 
 

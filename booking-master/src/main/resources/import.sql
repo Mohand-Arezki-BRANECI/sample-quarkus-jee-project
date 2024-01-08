@@ -13,3 +13,6 @@ REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`) VA
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`) VALUES (1,7,'2024-01-01',2);
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`) VALUES (2,10,'2023-12-31',2);
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`) VALUES (2,2,'2023-12-31',3);
+REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`) VALUES (2,2,'2024-01-12',6);
+REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`) VALUES (2,2,'2024-01-13',3);
+REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`) VALUES (2,2,'2024-01-14',2);

@@ -21,7 +21,6 @@ public class AvailabilityServiceImp implements AvailabilityService  {
     @Override
     public List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, Date startDate, Date endDate) {
         List<Hotel> availableHotels = new ArrayList<>();
-
         for (Availability initAv :  availabilityDAO.getAvailableHotelsForDate(numberOfGuests, startDate)) {
                 Hotel hotel = new Hotel(initAv.getHotel().getHotelName());
                 availableHotels.add(hotel);
@@ -33,13 +32,15 @@ public class AvailabilityServiceImp implements AvailabilityService  {
                 Hotel hotel = new Hotel(currAv.getHotel().getHotelName());
                 currentAvailableHotels.add(hotel);
             }
+
             availableHotels = availableHotels.stream()
                     .filter(hotel -> currentAvailableHotels.stream()
                             .anyMatch(currentHotel -> currentHotel.getHotelName().equals(hotel.getHotelName())))
                     .collect(Collectors.toList());
 
+
             // Move to the next day
-            currentDate.setTime(currentDate.getTime() + 24 * 60 * 60 * 1000); // Add one day
+            currentDate.setTime(currentDate.getTime() + 24 * 60 * 60 * 1000);
         }
 
         return availableHotels;
