@@ -24,7 +24,7 @@ public class AvailabilityRessource {
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public List<Hotel> getConsistentlyAvailableHotels(
-            @QueryParam("numberOfGuests") Integer numberOfGuests,
+            @QueryParam("numberOfGuests") int numberOfGuests,
             @QueryParam("startDate") String startDate,
             @QueryParam("endDate") String endDate) {
 

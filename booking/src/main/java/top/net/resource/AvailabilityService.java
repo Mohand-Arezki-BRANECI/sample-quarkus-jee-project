@@ -7,6 +7,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 @Path("/hotelAvailability")
@@ -15,6 +16,6 @@ public interface AvailabilityService {
 
     @Path("availability")
     @GET
-    List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, Date startDate, Date endDate);
+    List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, String startDate, String endDate);
 
 }

@@ -20,7 +20,7 @@ public class AvailabilityServiceImp implements AvailabilityService  {
     AvailabilityDAO availabilityDAO;
     @Override
     public List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, Date startDate, Date endDate) {
-        ArrayList<Hotel> availableHotels = new ArrayList<>();
+        List<Hotel> availableHotels = new ArrayList<>();
 
         for (Availability initAv :  availabilityDAO.getAvailableHotelsForDate(numberOfGuests, startDate)) {
                 Hotel hotel = new Hotel(initAv.getHotel().getHotelName());
@@ -29,12 +29,14 @@ public class AvailabilityServiceImp implements AvailabilityService  {
         Date currentDate = new Date(startDate.getTime());
         while (!currentDate.after(endDate)) {
             List<Hotel> currentAvailableHotels = new ArrayList<>();
-            for (fr.pantheonsorbonne.ufr27.miage.model.Availability currAv : availabilityDAO.getAvailableHotelsForDate(numberOfGuests, startDate)) {
+            for (fr.pantheonsorbonne.ufr27.miage.model.Availability currAv : availabilityDAO.getAvailableHotelsForDate(numberOfGuests, currentDate)) {
                 Hotel hotel = new Hotel(currAv.getHotel().getHotelName());
-                //currentAvailableHotels.add(new fr.pantheonsorbonne.ufr27.miage.dto.Availability(currAv.getBedsNumber(), currAv.getNumberFreeRooms(), hotel, currAv.getDate()));
                 currentAvailableHotels.add(hotel);
             }
-            availableHotels.retainAll(currentAvailableHotels);
+            availableHotels = availableHotels.stream()
+                    .filter(hotel -> currentAvailableHotels.stream()
+                            .anyMatch(currentHotel -> currentHotel.getHotelName().equals(hotel.getHotelName())))
+                    .collect(Collectors.toList());
 
             // Move to the next day
             currentDate.setTime(currentDate.getTime() + 24 * 60 * 60 * 1000); // Add one day

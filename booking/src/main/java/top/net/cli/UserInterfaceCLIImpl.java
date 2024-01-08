@@ -23,6 +23,7 @@ import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -55,11 +56,9 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     @ConfigProperty(name = "fr.pantheonsorbonne.ufr27.miage.vendorId")
     Integer vendorId;
-
-    private Date startDate;
-    private Date endDate;
+    private String startDateString;
+    private String endDateString;
     private int nbGuests;
-
     public void displayAvailableGigsToCli() {
         terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
@@ -82,15 +81,12 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.print("!!!");
         terminal.println("find hotel for you !!!"+  this.nbGuests);
         terminal.println("this.nbGuests" + this.nbGuests);
-        terminal.println("this.startDate---->" + this.startDate);
-        terminal.println("this.endDate---->" + this.endDate);
+        terminal.println("this.startDate---->" + this.startDateString);
+        terminal.println("this.endDate---->" + this.endDateString);
 
-        List<fr.pantheonsorbonne.ufr27.miage.dto.Hotel> hotels = availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDate, this.endDate);
-        /*for(Hotel hotel: availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDate, this.endDate)){
-            terminal.println("this.nbGuests---->" + this.nbGuests);
-            terminal.println("this.startDate---->" + this.startDate);
-            terminal.println("this.endDate---->" + this.endDate);
-        }*/
+        for (Hotel hotel : availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString)) {
+            terminal.println("[" + hotel.getHotelName()+ "] " );
+        }
     }
     public void askForNumberOfGuests() {
         this.nbGuests = textIO.newIntInputReader().read("How many guests?");
@@ -99,29 +95,30 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     public void askForDates() throws ParseException {
 
-        String startDateString = textIO.newStringInputReader().read("Specify start date (yyyy-MM-dd) : ");
-        String endDateString = textIO.newStringInputReader().read("Specify end date (yyyy-MM-dd) : ");
+        this.startDateString = textIO.newStringInputReader().read("Specify start date (yyyy-MM-dd) : ");
+        this.endDateString = textIO.newStringInputReader().read("Specify end date (yyyy-MM-dd) : ");
 
-        if (!isValidDateFormat(startDateString) || !isValidDateFormat(endDateString)) {
+        if (!isValidDateFormat(this.startDateString) || !isValidDateFormat(this.endDateString)) {
             terminal.println("Veuillez entrer des dates valides au format yyyy-MM-dd.");
             return;
         }
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         try {
-             this.startDate = dateFormat.parse(startDateString);
-            this.endDate = dateFormat.parse(endDateString);
+             Date startDate = dateFormat.parse(this.startDateString);
+            Date endDate = dateFormat.parse(this.endDateString);
             Date today = new Date();
 
-            if (this.startDate.before(today)) {
+            if (startDate.before(today)) {
                 terminal.println("La date de début ne peut pas être dans le passe.");
                 return;
             }
 
-            if (this.endDate.before(this.startDate)) {
+            if (endDate.before(startDate)) {
                 terminal.println("La date de fin ne peut pas être antérieure à la date de début.");
                 return;
             }
+
 
     }catch (ParseException e) {
             terminal.println("Une erreur s'est produite lors de l'analyse des dates.");
