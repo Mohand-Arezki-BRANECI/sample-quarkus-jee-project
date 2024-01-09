@@ -30,9 +30,12 @@ public class CamelRoutes extends RouteBuilder {
 
         from("direct:sendTransactionToAllBanks")//
                 .marshal().json()
-                .log("${body}")
                 .to("sjms2:" + jmsPrefix + "bankService?exchangePattern=InOut")
+<<<<<<< Updated upstream
                 .log("Transaction ${body} successfully sent to all available banks.");
+=======
+                .log("Transaction successfully sent to all available banks.");
+>>>>>>> Stashed changes
 
         from("sjms2:" + jmsPrefix + "bankService?exchangePattern=InOut")
                 .unmarshal().json(TransactionDTO.class)
@@ -41,13 +44,10 @@ public class CamelRoutes extends RouteBuilder {
                 .to("direct:processMessage")
                 .end();
 
-
         from("direct:processMessage")
-                .log("Transaction received: ${body}")
-                .bean(BankService.class, "handleReceivedTransaction").marshal().json()
-                .log("Transaction added and balance updated: ${body}");
-
-
-
+                .log("Transaction received")
+                .bean(BankService.class, "handleReceivedTransaction")
+                .marshal().json()
+                .log("Transaction added and balance updated");
     }
 }

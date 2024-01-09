@@ -87,7 +87,11 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         String password = textIO.newStringInputReader().read("Passwort:  ");
 
 
+<<<<<<< Updated upstream
         TransactionDTO transaction = new TransactionDTO(email,password,1,1000,1,1000,100);
+=======
+        TransactionDTO transaction = new TransactionDTO(email,password,1,999,1,1000,100);
+>>>>>>> Stashed changes
 
 
         try {

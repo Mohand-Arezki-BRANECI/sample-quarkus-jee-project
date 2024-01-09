@@ -67,7 +67,7 @@ public class BankResource {
 
 
             // For demonstration purposes, returning a simple response
-            String responseMessage = "Transaction created successfully for toAccount number: " + fromAccount.getBank().getBankname();
+            String responseMessage = "Transaction created successfully for toAccount number: " + fromAccount.getAccount_id();
             return Response.status(Response.Status.OK)
                     .entity(responseMessage)
                     .build();
