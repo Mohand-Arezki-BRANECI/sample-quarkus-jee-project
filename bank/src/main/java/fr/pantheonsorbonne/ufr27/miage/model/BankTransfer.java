@@ -25,20 +25,40 @@ public class BankTransfer {
     @Column(name = "amount", nullable = false)
     private double amount;
 
+    public long getFromBankId() {
+        return fromBankId;
+    }
+
     public void setFromBankId(long fromBankId) {
         this.fromBankId = fromBankId;
+    }
+
+    public long getFromAccountId() {
+        return fromAccountId;
     }
 
     public void setFromAccountId(long fromAccount) {
         this.fromAccountId = fromAccount;
     }
 
+    public long getToAccountId() {
+        return toAccountId;
+    }
+
     public void setToAccountId(long toAccount) {
         this.toAccountId = toAccount;
     }
 
+    public long getToBankId() {
+        return toBankId;
+    }
+
     public void setToBankId(long toBankId) {
         this.toBankId = toBankId;
+    }
+
+    public double getAmount() {
+        return amount;
     }
 
     public void setAmount(double amount) {

@@ -11,16 +11,15 @@ import jakarta.persistence.*;
 @Entity
 public class Account {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "accountId", nullable = false)
-    private Integer accountId;
+    private long accountId;
 
     @Column(name = "ownerFirstName", nullable = false, length = 45)
     private String ownerFirstName;
     @Column(name = "ownerLastName", nullable = false, length = 45)
     private String ownerLastName;
 
-        @Column(name = "email", nullable = false, length = 45)
+    @Column(name = "email", nullable = false, length = 45)
     private String email;
     @Column(name = "password", nullable = false, length = 45)
     private String password;
@@ -33,27 +32,56 @@ public class Account {
     @JoinColumn(name = "bankId", nullable = false)
     private Bank bank;
 
-    public Integer getAccount_id() {
+    public long getAccount_id() {
         return accountId;
+    }
+
+    public void setAccountId(long accountId) {
+        this.accountId = accountId;
     }
 
     public double getBalance() {
         return balance;
     }
-
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Bank getBank() {
         return bank;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public void setBank(Bank bank) {
+        this.bank = bank;
+    }
+
+    public String getOwnerFirstName() {
+        return ownerFirstName;
+    }
+
+    public void setOwnerFirstName(String ownerFirstName) {
+        this.ownerFirstName = ownerFirstName;
+    }
+
+    public String getOwnerLastName() {
+        return ownerLastName;
+    }
+    public void setOwnerLastName(String ownerLastName) {
+        this.ownerLastName = ownerLastName;
     }
 }

@@ -2,7 +2,6 @@ package fr.pantheonsorbonne.ufr27.miage.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
 
 
 @NamedQueries(
@@ -15,7 +14,6 @@ import java.util.List;
 @Entity
 public class Bank {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bankId", nullable = false)
     private long bankId;
 
@@ -28,8 +26,15 @@ public class Bank {
         return bankId;
     }
 
+    public void setBankId(long bankId) {
+        this.bankId = bankId;
+    }
+
     public String getBankname() {
         return bankname;
     }
 
+    public void setBankname(String bankname) {
+        this.bankname = bankname;
+    }
 }
