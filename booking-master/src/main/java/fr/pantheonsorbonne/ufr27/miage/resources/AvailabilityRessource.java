@@ -33,7 +33,8 @@ public class AvailabilityRessource {
         try {
             Date start = dateFormat.parse(startDate);
             Date end = dateFormat.parse(endDate);
-            return service.getConsistentlyAvailableHotels(numberOfGuests, start, end);
+            List <Hotel> t = service.getConsistentlyAvailableHotels(numberOfGuests, start, end);
+            return t;
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
