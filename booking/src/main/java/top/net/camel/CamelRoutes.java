@@ -1,9 +1,6 @@
 package top.net.camel;
 
-import fr.pantheonsorbonne.ufr27.miage.dto.Booking;
-import fr.pantheonsorbonne.ufr27.miage.dto.CancelationNotice;
-import fr.pantheonsorbonne.ufr27.miage.dto.ETicket;
-import fr.pantheonsorbonne.ufr27.miage.dto.TicketEmissionData;
+import fr.pantheonsorbonne.ufr27.miage.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.camel.CamelContext;
@@ -59,6 +56,9 @@ public class CamelRoutes extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         camelContext.setTracing(true);
+
+        from("sjms2:topic:paymentReceived")
+                .log("Transaction has been: ${body}");
 
 
         from("direct:cli")//

@@ -15,8 +15,6 @@ import java.util.Collection;
 @RegisterRestClient(configKey = "location-api")
 public interface BankService {
 
-
-
     @Path("createTransaction")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

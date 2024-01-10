@@ -30,15 +30,11 @@ public class CamelRoutes extends RouteBuilder {
 
         from("direct:sendTransactionToAllBanks")//
                 .marshal().json()
-                .log("${body}")
-                .to("sjms2:" + jmsPrefix + "bankService?exchangePattern=InOut")
-<<<<<<< Updated upstream
-                .log("Transaction ${body} successfully sent to all available banks.");
-=======
+                .to("sjms2:topic:transactionTopic")
                 .log("Transaction successfully sent to all available banks.");
->>>>>>> Stashed changes
 
-        from("sjms2:" + jmsPrefix + "bankService?exchangePattern=InOut")
+
+        from("sjms2:topic:transactionTopic")
                 .unmarshal().json(TransactionDTO.class)
                 .filter()
                 .method(TransactionGateway.class,"shouldProcess")
