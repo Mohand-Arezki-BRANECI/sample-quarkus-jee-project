@@ -1,11 +1,8 @@
 package top.net.cli;
 
 
-import fr.pantheonsorbonne.ufr27.miage.dto.Booking;
-import fr.pantheonsorbonne.ufr27.miage.dto.Gig;
+import fr.pantheonsorbonne.ufr27.miage.dto.*;
 
-import fr.pantheonsorbonne.ufr27.miage.dto.HotelLocation;
-import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -83,18 +80,31 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("We received the following transaction Request in your name from Booking: SHOW STUFF");
         terminal.println("To authorise the transaction pleas login to your MIAGE bank account!");
 
-        String email = textIO.newStringInputReader().read("Please insert Account email: ");
-        String password = textIO.newStringInputReader().read("Passwort:  ");
-
-
-
-        TransactionDTO transaction = new TransactionDTO(email,password,1,999,1,1000,100);
-
-
+        String email = textIO.newStringInputReader().read("Please insert your email associated with your account: ");
+        String password = textIO.newStringInputReader().read("Please Insert your password:  ");
 
         try {
-            Response response = bankService.createTransaction(transaction);
-            terminal.println(response.readEntity(String.class));
+            Response loginResponse = bankService.loginToBankAccount(email, password);
+            if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
+                // Extract the serialized AccountDTO data from the response
+                AccountDTO accountDTO = loginResponse.readEntity(AccountDTO.class);
+
+                // Now 'accountDTO' contains the deserialized data
+                // You can use the data as needed, for example, display it
+                this.showSuccessMessage("Login successful. Welcome  " + accountDTO.getOwnerFirstName() + " " + accountDTO.getOwnerLastName());
+
+                String confirmation = textIO.newStringInputReader().read("Would you like to confirm the payment? [Y/N]");
+                if(confirmation.equals("Y")){
+                    //TODO:
+                    TransactionDTO transaction = new TransactionDTO(email,password,1,999,1,1000,100);
+                    Response transactionResponse = bankService.createTransaction(transaction);
+                    this.showSuccessMessage(transactionResponse.readEntity(String.class));
+                }
+            } else {
+                // Handle the case where the login failed
+                String errorMessage = loginResponse.readEntity(String.class);
+                showErrorMessage("Login failed. " + errorMessage);
+            }
 
         } catch (WebApplicationException e) {
             String respStr = e.getResponse().readEntity(String.class);
@@ -116,6 +126,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println(errorMessage);
         terminal.getProperties().setPromptColor(Color.white);
     }
+
 
     @Override
     public void showSuccessMessage(String s) {

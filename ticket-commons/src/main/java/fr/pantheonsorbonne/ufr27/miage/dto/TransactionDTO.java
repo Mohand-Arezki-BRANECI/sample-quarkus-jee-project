@@ -7,8 +7,6 @@ public class TransactionDTO {
 
     private long toBankId;
 
-
-
     private long fromAccountId;
 
     private long fromBankId;
