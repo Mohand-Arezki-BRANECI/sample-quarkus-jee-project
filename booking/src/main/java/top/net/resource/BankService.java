@@ -9,7 +9,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 
 @Path("/bank")
-@RegisterRestClient(configKey = "location-api")
+@RegisterRestClient(configKey = "bank-api")
 public interface BankService {
 
     @Path("createTransaction")
@@ -21,4 +21,6 @@ public interface BankService {
     @GET
     public Response loginToBankAccount(@QueryParam("email") String email,
                                        @QueryParam("password") String password);
+
+
 }

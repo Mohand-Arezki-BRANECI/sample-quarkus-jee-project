@@ -33,6 +33,7 @@ public class Main implements Runnable {
 
         while (true) {
             try {
+
                 // booking-cli
                 eCommerce.askForHotelLocation();
                 eCommerce.askForDates();
@@ -41,6 +42,7 @@ public class Main implements Runnable {
 
                 // bank
                 eCommerce.sendPayment();
+
                 //eCommerce.askForHotelLocation();
                 // eCommerce.displayAvailableGigsToCli();
                 // Booking booking = eCommerce.getBookingFromOperator();
