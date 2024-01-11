@@ -11,6 +11,7 @@ import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import top.net.resource.AvailabilityService;
 import top.net.resource.BankService;
 import top.net.resource.LocationService;
 import top.net.resource.VendorService;
@@ -19,9 +20,14 @@ import jakarta.ws.rs.core.Response;
 
 
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -38,8 +44,12 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     @Inject
     @RestClient
-    BankService bankService;
+    AvailabilityService availabilityService;
 
+
+    @Inject
+    @RestClient
+    BankService bankService;
 
 
     TextTerminal<?> terminal;
@@ -47,9 +57,11 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     @ConfigProperty(name = "fr.pantheonsorbonne.ufr27.miage.vendorId")
     Integer vendorId;
-
-    public void displayAvailableGigsToCli(){
-        terminal.println("VendorId="+vendorId);
+    private String startDateString;
+    private String endDateString;
+    private int nbGuests;
+    public void displayAvailableGigsToCli() {
+        terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
             terminal.println("[" + gig.getVenueId() + "] " + gig.getArtistName() + " " + gig.getDate().format(DateTimeFormatter.ISO_DATE) + " " + gig.getLocation());
         }
@@ -63,6 +75,70 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             terminal.println("[" + hotelLocation.getLocationName() + "] " + hotelLocation.getLongitude() + " " + hotelLocation.getLatitude());
         }
         String hotelName = textIO.newStringInputReader().withPossibleValues(locationService.getHotelLocations().stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
+    }
+
+
+    public void askForHotel(){
+
+        terminal.println("this.startDate---->" + this.startDateString);
+        terminal.println("this.endDate---->" + this.endDateString);
+        terminal.println("Type de this.endDateString : " + this.endDateString.getClass().getName());
+
+
+        for (Hotel hotel : availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString)) {
+            terminal.println("ajung aici");
+            terminal.println("[" + hotel.getHotelName()+ "] " );
+        }
+    }
+    public void askForNumberOfGuests() {
+        this.nbGuests = textIO.newIntInputReader().read("How many guests?");
+
+    }
+
+    public void askForDates() throws ParseException {
+
+        this.startDateString = textIO.newStringInputReader().read("Specify start date (yyyy-MM-dd) : ");
+        this.endDateString = textIO.newStringInputReader().read("Specify end date (yyyy-MM-dd) : ");
+
+        if (!isValidDateFormat(this.startDateString) || !isValidDateFormat(this.endDateString)) {
+            terminal.println("Veuillez entrer des dates valides au format yyyy-MM-dd.");
+            return;
+        }
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+             Date startDate = dateFormat.parse(this.startDateString);
+            Date endDate = dateFormat.parse(this.endDateString);
+            Date today = new Date();
+
+            if (startDate.before(today)) {
+                terminal.println("La date de début ne peut pas être dans le passe.");
+                return;
+            }
+
+            if (endDate.before(startDate)) {
+                terminal.println("La date de fin ne peut pas être antérieure à la date de début.");
+                return;
+            }
+
+
+    }catch (ParseException e) {
+            terminal.println("Une erreur s'est produite lors de l'analyse des dates.");
+            e.printStackTrace();
+        }
+
+    }
+
+    private boolean isValidDateFormat(String date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateFormat.setLenient(false);
+
+        try {
+            dateFormat.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
     }
 
 
@@ -113,7 +189,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     }
 
-
     @Override
     public void accept(TextIO textIO, RunnerData runnerData) {
         this.textIO = textIO;
@@ -126,7 +201,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println(errorMessage);
         terminal.getProperties().setPromptColor(Color.white);
     }
-
 
     @Override
     public void showSuccessMessage(String s) {
