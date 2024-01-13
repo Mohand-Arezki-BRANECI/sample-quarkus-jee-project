@@ -11,14 +11,9 @@ public class HotelOption {
     @Column(name = "optionId", nullable = false)
     private Integer id;
 
-    @ManyToMany(mappedBy="options")
-    private Set<Hotel> hotels;
-    public Set<Hotel> getHotels() {
-        return hotels;
-    }
-    public void setHotels(Set<Hotel> hotels) {
-        this.hotels= hotels;
-    }
+    @ManyToOne
+    @JoinColumn(name = "hotelId")
+    private Hotel hotel;
 
     @ManyToMany(mappedBy="options")
     private Set<Reservation> reservations;
@@ -30,6 +25,9 @@ public class HotelOption {
     }
     @Column(name = "optionName")
     private String optionName;
+
+    @Column(name = "optionPrice")
+    private Double optionPrice;
 
     public String getOptionName() {
         return optionName;
@@ -43,5 +41,20 @@ public class HotelOption {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Double getOptionPrice() {
+        return optionPrice;
+    }
+
+    public void setOptionPrice(Double optionPrice) {
+        this.optionPrice = optionPrice;
+    }
+    
+    public Hotel getHotel() {
+        return hotel;
+    }
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
     }
 }
