@@ -10,5 +10,5 @@ import java.util.List;
 public interface AvailabilityService {
 
 
-    List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, Date date, Date endDate);
+    List<Hotel> getConsistentlyAvailableHotels(int numberOfGuests, Date date, Date endDate, int locationId);
 }

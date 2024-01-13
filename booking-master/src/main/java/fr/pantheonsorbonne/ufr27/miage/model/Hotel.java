@@ -3,6 +3,14 @@ import jakarta.persistence.*;
 
 import java.util.Set;
 
+
+@NamedQueries({
+        @NamedQuery(
+                name = "findByLocationId",
+                query ="SELECT a FROM Hotel a " +
+                        "WHERE a.hotelLocation.id = :locationId"
+        ),
+})
 @Table(name = "Hotel")
 @Entity
 

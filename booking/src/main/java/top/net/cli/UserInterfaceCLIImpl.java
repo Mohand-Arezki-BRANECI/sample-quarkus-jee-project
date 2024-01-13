@@ -60,6 +60,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     private String startDateString;
     private String endDateString;
     private int nbGuests;
+    private int selectedLocationId;
     public void displayAvailableGigsToCli() {
         terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
@@ -71,10 +72,33 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     public void askForHotelLocation() {
         terminal.println("Welcome to Booking");
         terminal.println("Please select from the location we provide here");
-        for (HotelLocation hotelLocation : locationService.getHotelLocations()) {
+
+        Collection<HotelLocation> hotelLocations = locationService.getHotelLocations();
+
+        for (HotelLocation hotelLocation : hotelLocations) {
             terminal.println("[" + hotelLocation.getLocationName() + "] " + hotelLocation.getLongitude() + " " + hotelLocation.getLatitude());
         }
+
         String hotelName = textIO.newStringInputReader().withPossibleValues(locationService.getHotelLocations().stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
+
+
+        // Find the HotelLocation based on the selected name
+        HotelLocation selectedLocation = hotelLocations.stream()
+                .filter(HotelLocation.class::isInstance)
+                .filter(hotelLocation -> ((HotelLocation) hotelLocation).getLocationName().equals(hotelName))
+                .findFirst()
+                .map(HotelLocation.class::cast)
+                .orElse(null);
+
+        // Check if a location is found and extract the ID
+        if (selectedLocation != null) {
+            selectedLocationId = selectedLocation.getId();
+            // Now you can use the selectedLocationId as needed
+            terminal.println("You selected location: " + hotelName + " with ID: " + selectedLocationId);
+        } else {
+            terminal.println("Invalid selection. Please try again.");
+            // Handle the case where the selected location is not found.
+        }
     }
 
 
@@ -85,8 +109,9 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Type de this.endDateString : " + this.endDateString.getClass().getName());
 
 
-        for (Hotel hotel : availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString)) {
-            terminal.println("ajung aici");
+        for (Hotel hotel : availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString, this.selectedLocationId)) {
+            terminal.println("ajung aici locationID --->" + hotel.getLocationId());
+            terminal.println("ajung aici locationID --->" + hotel.getHotelName());
             terminal.println("[" + hotel.getHotelName()+ "] " );
         }
     }

@@ -16,6 +16,7 @@ public interface AvailabilityService {
     @GET
     List<Hotel> getConsistentlyAvailableHotels(@QueryParam("numberOfGuests") int numberOfGuests,
                                                @QueryParam("startDate") String startDate,
-                                               @QueryParam("endDate") String endDate);
+                                               @QueryParam("endDate") String endDate,
+                                               @QueryParam("locationId") int locationId);
 
 }

@@ -26,14 +26,15 @@ public class AvailabilityRessource {
     public List<Hotel> getConsistentlyAvailableHotels(
             @QueryParam("numberOfGuests") int numberOfGuests,
             @QueryParam("startDate") String startDate,
-            @QueryParam("endDate") String endDate) {
+            @QueryParam("endDate") String endDate,
+            @QueryParam("locationId") int locationId) {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         try {
             Date start = dateFormat.parse(startDate);
             Date end = dateFormat.parse(endDate);
-            List <Hotel> t = service.getConsistentlyAvailableHotels(numberOfGuests, start, end);
+            List <Hotel> t = service.getConsistentlyAvailableHotels(numberOfGuests, start, end, locationId);
             return t;
         } catch (ParseException e) {
             throw new RuntimeException(e);
