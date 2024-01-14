@@ -6,7 +6,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 
 @Path("/reservation")
-@RegisterRestClient(configKey = "reservation-api")
+@RegisterRestClient(configKey = "location-api")
 
 public interface LoginService {
     @Path("loginToAccount")
