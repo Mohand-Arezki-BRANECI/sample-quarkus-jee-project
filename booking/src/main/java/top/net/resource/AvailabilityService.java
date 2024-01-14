@@ -1,6 +1,7 @@
 package top.net.resource;
 
 
+import fr.pantheonsorbonne.ufr27.miage.dto.Availability;
 import fr.pantheonsorbonne.ufr27.miage.dto.Hotel;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -14,8 +15,9 @@ public interface AvailabilityService {
 
     @Path("availability")
     @GET
-    List<Hotel> getConsistentlyAvailableHotels(@QueryParam("numberOfGuests") int numberOfGuests,
-                                               @QueryParam("startDate") String startDate,
-                                               @QueryParam("endDate") String endDate);
+    List<Availability> getConsistentlyAvailableHotels(@QueryParam("numberOfGuests") int numberOfGuests,
+                                                      @QueryParam("startDate") String startDate,
+                                                      @QueryParam("endDate") String endDate,
+                                                      @QueryParam("locationId") int locationId);
 
 }

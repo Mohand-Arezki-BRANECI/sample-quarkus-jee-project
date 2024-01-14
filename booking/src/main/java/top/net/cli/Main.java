@@ -33,14 +33,19 @@ public class Main implements Runnable {
 
         while (true) {
             try {
+
                 // booking-cli
+                eCommerce.askToLogIn();
                 eCommerce.askForHotelLocation();
                 eCommerce.askForDates();
                 eCommerce.askForNumberOfGuests();
                 eCommerce.askForHotel();
+                eCommerce.askForOptions();
+                eCommerce.displayReservationDetails();
 
                 // bank
                 eCommerce.sendPayment();
+
                 //eCommerce.askForHotelLocation();
                 // eCommerce.displayAvailableGigsToCli();
                 // Booking booking = eCommerce.getBookingFromOperator();
