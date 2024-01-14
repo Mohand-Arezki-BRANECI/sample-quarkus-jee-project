@@ -45,11 +45,8 @@ public class Main implements Runnable {
 
                 // bank
                 eCommerce.sendPayment();
+                eCommerce.cancelReservation();
 
-                //eCommerce.askForHotelLocation();
-                // eCommerce.displayAvailableGigsToCli();
-                // Booking booking = eCommerce.getBookingFromOperator();
-                // bookingGateway.sendBookingOrder(booking.getStandingTicketsNumber(), booking.getSeatingTicketsNumber(), booking.getVenueId());
             } catch (Exception e) {
                 eCommerce.showErrorMessage(e.getMessage());
             }

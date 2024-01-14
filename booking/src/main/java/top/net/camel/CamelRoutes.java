@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 
@@ -55,10 +56,20 @@ public class CamelRoutes extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        camelContext.setTracing(true);
+        camelContext.setTracing(false);
 
-        from("sjms2:topic:paymentReceived")
-                .log("Transaction has been: ${body}");
+        from("sjms2:topic:clientPaymentResponse")
+                .unmarshal().json(TransactionDTO.class)
+                .log(LoggingLevel.INFO,"${body}");
+
+        from("sjms2:topic:bookingPaymentResponse")
+                .unmarshal().json(TransactionDTO.class)
+                .log(LoggingLevel.INFO,"${body}");
+
+        from("sjms2:topic:cancellationPaymentResponse")
+                .unmarshal().json(TransactionDTO.class)
+                .log(LoggingLevel.INFO,"${body}");
+
 
 
         from("direct:cli")//

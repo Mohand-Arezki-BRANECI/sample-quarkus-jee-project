@@ -11,6 +11,7 @@ import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import top.net.resource.*;
+import top.net.resource.BankService;
 import jakarta.ws.rs.core.Response;
 
 
@@ -48,7 +49,13 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     @Inject
     @RestClient
-    BankService bankService;
+    BankServiceAmerica bankServiceAmerica;
+
+    @Inject
+    @RestClient
+    BankServiceIreland bankServiceIreland;
+
+
 
     @Inject
     @RestClient
@@ -286,15 +293,83 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         return new Booking(vendorId,venueId,standingCount,sittingCount);
     }
 
+    public void cancelReservation(){
+        String reservationId = textIO.newStringInputReader().read("Which of your reservations would you like to cancel?");
+
+        //TODO: Get reservation and associated Transaction
+
+        String confirmation = textIO.newStringInputReader().read("Are you sure you want to cancel this reservation? [Y|N]");
+
+        if(confirmation.equals("Y") || confirmation.equals("y")){
+            // TODO: Also change Reservation status in Bookings Reservation as well as in Hotels Reservation Tables
+
+            try {
+                String bankNr  = textIO.newStringInputReader().read("Which Bank do you want to login to (Press the number)? \n 1) Bank of America \n 2) Bank of Ireland ");
+
+                BankService bankServiceToUse;
+
+
+                if(bankNr.equals("1")){
+                    bankServiceToUse = bankServiceAmerica;
+                }else{
+                    bankServiceToUse = bankServiceIreland;
+                }
+
+                String email = textIO.newStringInputReader().read("Please insert your email associated with your account: ");
+                String password = textIO.newStringInputReader().read("Please Insert your password:  ");
+
+                // get Account information
+                Response loginResponse = bankServiceToUse.loginToBankAccount(email, password);
+                if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
+                    AccountDTO accountDTO = loginResponse.readEntity(AccountDTO.class);
+                    // get the transferObject
+                    Response bankTransferResponse = bankServiceToUse.getBankTransfer(reservationId,accountDTO.getAccountId(), accountDTO.getBankId());
+                    if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
+                        TransactionDTO bankTransfer = bankTransferResponse.readEntity(TransactionDTO.class);
+
+                        // construct inverse transaction
+                        TransactionDTO transaction = new TransactionDTO("booking@booking.com","test",bankTransfer.getFromAccountId(), bankTransfer.getFromBankId(), bankTransfer.getToAccountId(),bankTransfer.getToBankId(),bankTransfer.getAmount(), "cancellation",reservationId);
+                        Response transactionResponse = bankServiceAmerica.createTransaction(transaction);
+                        this.showSuccessMessage(transactionResponse.readEntity(String.class));
+                    }else {
+                        // Handle the case where the login failed
+                        String errorMessage = bankTransferResponse.readEntity(String.class);
+                        showErrorMessage(errorMessage);
+                    }
+                }else {
+                    // Handle the case where the login failed
+                    String errorMessage = loginResponse.readEntity(String.class);
+                    showErrorMessage("Login failed: " + errorMessage);
+                }
+            }catch (WebApplicationException e) {
+                String respStr = e.getResponse().readEntity(String.class);
+                this.showErrorMessage(respStr);
+            }
+        }
+    }
+
     public void sendPayment(){
         terminal.println("We received the following transaction Request in your name from Booking: SHOW STUFF");
         terminal.println("To authorise the transaction pleas login to your MIAGE bank account!");
 
+        String bankNr  = textIO.newStringInputReader().read("Which Bank do you want to login to (Press the number)? \n 1) Bank of America \n 2) Bank of Ireland ");
+
+        BankService bankServiceToUse;
+
+        if(bankNr.equals("1")){
+            bankServiceToUse = bankServiceAmerica;
+        }else{
+            bankServiceToUse = bankServiceIreland;
+        }
+
+
         String email = textIO.newStringInputReader().read("Please insert your email associated with your account: ");
         String password = textIO.newStringInputReader().read("Please Insert your password:  ");
 
+
+
         try {
-            Response loginResponse = bankService.loginToBankAccount(email, password);
+            Response loginResponse = bankServiceToUse.loginToBankAccount(email, password);
             if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
                 // Extract the serialized AccountDTO data from the response
                 AccountDTO accountDTO = loginResponse.readEntity(AccountDTO.class);
@@ -304,21 +379,23 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
                 this.showSuccessMessage("Login successful. Welcome  " + accountDTO.getOwnerFirstName() + " " + accountDTO.getOwnerLastName());
 
                 String confirmation = textIO.newStringInputReader().read("Would you like to confirm the payment? [Y/N]");
-                if(confirmation.equals("Y")){
+                if(confirmation.equals("Y") || confirmation.equals("y")){
                     //TODO:
-                    TransactionDTO transaction = new TransactionDTO(email,password,1,999,1,1000,100);
-                    Response transactionResponse = bankService.createTransaction(transaction);
+                    TransactionDTO transaction = new TransactionDTO(email,password,2,1000, accountDTO.getAccountId(), accountDTO.getBankId(), 100, "clientPayment", "1");
+                    terminal.println(transaction.getReservationId());
+                    Response transactionResponse = bankServiceToUse.createTransaction(transaction);
+
                     this.showSuccessMessage(transactionResponse.readEntity(String.class));
                 }
             } else {
                 // Handle the case where the login failed
                 String errorMessage = loginResponse.readEntity(String.class);
-                showErrorMessage("Login failed. " + errorMessage);
+                showErrorMessage("Login failed: " + errorMessage);
             }
 
         } catch (WebApplicationException e) {
             String respStr = e.getResponse().readEntity(String.class);
-            terminal.println(respStr);
+            this.showErrorMessage(respStr);
         }
 
     }

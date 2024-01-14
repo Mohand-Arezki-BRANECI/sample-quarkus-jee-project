@@ -30,6 +30,4 @@ public class HotelService {
                                     @QueryParam("nbrBeds") Integer nbrBeds,*/) {
         return null;
     }
-
-
 }

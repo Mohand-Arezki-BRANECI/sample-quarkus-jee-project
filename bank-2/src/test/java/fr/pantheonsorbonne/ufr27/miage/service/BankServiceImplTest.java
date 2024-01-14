@@ -1,10 +1,9 @@
 package fr.pantheonsorbonne.ufr27.miage.service;
-import fr.pantheonsorbonne.ufr27.miage.dao.BankDAO;
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import fr.pantheonsorbonne.ufr27.miage.exception.AccountNotFoundException;
 import fr.pantheonsorbonne.ufr27.miage.model.Account;
 import fr.pantheonsorbonne.ufr27.miage.model.Bank;
-import fr.pantheonsorbonne.ufr27.miage.model.BankTransfer;
+import fr.pantheonsorbonne.ufr27.miage.model.Transaction;
 import fr.pantheonsorbonne.ufr27.miage.resources.DBPopulation;
 import fr.pantheonsorbonne.ufr27.miage.resources.TestData;
 import io.quarkus.test.common.QuarkusTestResource;
@@ -56,13 +55,14 @@ class BankServiceImplTest {
 
     @Test
     void addTransaction(){
-        TransactionDTO transaction = new TransactionDTO(testData.email(), testData.password(), testData.toAccount(), testData.toBank(), testData.fromAccount(), testData.fromBank(), testData.amount());
-        BankTransfer bankTransfer = bankService.addTransaction(transaction);
+        TransactionDTO transaction = new TransactionDTO(testData.email(), testData.password(), testData.toAccount(), testData.toBank(), testData.fromAccount(), testData.fromBank(), testData.amount(),testData.transactionPurpose(),testData.reservationId());
+        Transaction bankTransfer = bankService.addTransaction(transaction);
         assertEquals(99, bankTransfer.getFromBankId());
         assertEquals(99, bankTransfer.getFromAccountId());
         assertEquals(1, bankTransfer.getToAccountId());
         assertEquals(1, bankTransfer.getToAccountId());
         assertEquals(100, bankTransfer.getAmount());
+        assertEquals("1", bankTransfer.getReservationId());
 
     }
 
