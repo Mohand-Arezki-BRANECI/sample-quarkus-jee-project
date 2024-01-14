@@ -16,6 +16,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
+@Path("/reservation")
 public class LoginResource {
 
         @Inject
