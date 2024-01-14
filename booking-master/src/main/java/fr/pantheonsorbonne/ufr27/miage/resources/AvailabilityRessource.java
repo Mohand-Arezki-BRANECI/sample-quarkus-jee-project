@@ -1,7 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.resources;
 
+import fr.pantheonsorbonne.ufr27.miage.dto.Availability;
 import fr.pantheonsorbonne.ufr27.miage.dto.Hotel;
-import fr.pantheonsorbonne.ufr27.miage.model.Availability;
 import fr.pantheonsorbonne.ufr27.miage.service.AvailabilityService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -23,7 +23,7 @@ public class AvailabilityRessource {
     @Path("availability")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
-    public List<Hotel> getConsistentlyAvailableHotels(
+    public List<Availability> getConsistentlyAvailableHotels(
             @QueryParam("numberOfGuests") int numberOfGuests,
             @QueryParam("startDate") String startDate,
             @QueryParam("endDate") String endDate,
