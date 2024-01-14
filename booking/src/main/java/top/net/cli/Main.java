@@ -43,8 +43,6 @@ public class Main implements Runnable {
                 eCommerce.askForOptions();
                 eCommerce.displayReservationDetails();
 
-                eCommerce.displayReservationDetails();
-
                 // bank
                 eCommerce.sendPayment();
 

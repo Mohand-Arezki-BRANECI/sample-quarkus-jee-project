@@ -13,7 +13,6 @@ import org.apache.http.ParseException;
 
 import java.util.List;
 @Path("/hotelOptions")
-
 public class OptionsResource {
 
     @Inject

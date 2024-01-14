@@ -12,6 +12,11 @@ public class Availability {
     private Double price;
 
     public Availability() {}
+
+    public Availability(Hotel hotel, double price) {
+        this.hotel = hotel ;
+        this.price = price;
+    }
     public Availability(int bedsNumber,int numberFreeRooms,  Hotel hotel, Date date, Double price) {
 
         this.bedsNumber =bedsNumber;
@@ -21,10 +26,6 @@ public class Availability {
         this.price = price;
     }
 
-    public Availability(Hotel hotel, Double price) {
-        this.hotel = hotel ;
-        this.price = price;
-    }
     public Hotel getHotel() {
         return hotel;
     }

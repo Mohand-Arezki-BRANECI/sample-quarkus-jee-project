@@ -220,26 +220,8 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             optionsPrice = optionsPrice + option.getOptionPrice();
         }
         terminal.println("Options price " + optionsPrice);
-
-    public void displayReservationDetails() {
-        double optionsPrice = 0.0;
-        terminal.println("Your reservation details:");
-        terminal.println("Hotel name: " + selectedHotelName);
-        terminal.println("Number of guests:" + nbGuests);
-        terminal.println("Start date: " + startDateString );
-        terminal.println("End date: " + startDateString );
-        terminal.println("Options: ");
-        for (HotelOption option : this.selectedOptions) {
-            terminal.println( "Name: " + option.getName() + " Price:   " + option.getOptionPrice());
-            optionsPrice = optionsPrice + option.getOptionPrice();
-        }
-        terminal.println("Options price:   " + optionsPrice);
         double totalPrice = optionsPrice + selectedAvailability.getPrice();
         terminal.println("Final price:   "+ totalPrice);
-
-
-    }
-
 
     }
 

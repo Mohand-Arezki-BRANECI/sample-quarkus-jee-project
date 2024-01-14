@@ -50,9 +50,6 @@ public class HotelOption {
         this.reservations= reservations;
     }
 
-    @Column(name = "optionPrice")
-    private Double optionPrice;
-
     public String getOptionName() {
         return optionName;
     }
@@ -68,18 +65,4 @@ public class HotelOption {
         this.id = id;
     }
 
-    public Double getOptionPrice() {
-        return optionPrice;
-    }
-
-    public void setOptionPrice(Double optionPrice) {
-        this.optionPrice = optionPrice;
-    }
-    
-    public Hotel getHotel() {
-        return hotel;
-    }
-    public void setHotel(Hotel hotel) {
-        this.hotel = hotel;
-    }
 }
