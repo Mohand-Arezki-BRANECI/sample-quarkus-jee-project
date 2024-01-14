@@ -1,10 +1,14 @@
 package fr.pantheonsorbonne.ufr27.miage.model;
 
 import jakarta.persistence.*;
+@NamedQueries(
+        {
+                @NamedQuery(name = "getAllUser", query = "SELECT a from User a"),
 
+        }
+)
 @Table(name = "User")
 @Entity
-
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

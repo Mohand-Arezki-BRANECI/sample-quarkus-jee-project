@@ -177,9 +177,8 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             try {
                 Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
                 if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
-
-
-
+                    String successMessage = loginResponse.readEntity(String.class);
+                    terminal.println(successMessage);
                 } else {
                     String errorMessage = loginResponse.readEntity(String.class);
                     showErrorMessage("Login failed. " + errorMessage);
