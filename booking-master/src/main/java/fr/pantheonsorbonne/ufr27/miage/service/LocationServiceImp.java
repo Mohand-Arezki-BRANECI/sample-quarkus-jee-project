@@ -14,9 +14,6 @@ import java.util.LinkedList;
 @RequestScoped
 public class LocationServiceImp implements LocationService {
 
-    @PersistenceContext
-    EntityManager em;
-
     @Inject
     HotelLocationDAO hotelLocationDAO;
 
@@ -24,7 +21,7 @@ public class LocationServiceImp implements LocationService {
     public Collection<HotelLocation> getHotelLocations() {
         Collection<HotelLocation> hotelLocations = new LinkedList<>();
         for (fr.pantheonsorbonne.ufr27.miage.model.HotelLocation hotelLocation : hotelLocationDAO.getHotelLocations()) {
-            hotelLocations.add(new HotelLocation(hotelLocation.getLocationName(),hotelLocation.getLongitude(), hotelLocation.getLongitude()));
+            hotelLocations.add(new HotelLocation(hotelLocation.getLocationName(),hotelLocation.getLongitude(), hotelLocation.getLongitude(),  hotelLocation.getId()));
         }
         return hotelLocations;
     }

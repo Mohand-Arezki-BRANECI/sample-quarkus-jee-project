@@ -2,7 +2,7 @@ REPLACE INTO `HotelLocation` ( `locationName`, `latitude`, `longitude`) VALUES (
 REPLACE INTO `Hotel` (`locationId`,`hotelName`) VALUES (2,'Hotel Paradiso');
 REPLACE INTO `Hotel` (`locationId`,`hotelName`) VALUES (1,'Hotel California');
 
-REPLACE INTO `User` (`firstName`,`lastName`,`email`) VALUES ('Jean','Dupont','jeandupont@gmail.com');
+REPLACE INTO `User` (`firstName`,`lastName`,`email`,`password`) VALUES ('Jean','Dupont','admin','admin');
 
 REPLACE INTO `HotelOption` (`optionName`,`optionPrice`,`hotelId`) VALUES ('Spa',50,1);
 REPLACE INTO `HotelOption` (`optionName`,`optionPrice`,`hotelId`) VALUES ('Pool',40,1);

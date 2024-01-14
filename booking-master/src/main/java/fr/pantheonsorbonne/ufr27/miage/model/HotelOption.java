@@ -3,6 +3,11 @@ import jakarta.persistence.*;
 
 import java.util.Set;
 
+@NamedQueries({
+        @NamedQuery(name = "findHotelOptions",
+                query = "SELECT h FROM HotelOption h ")
+})
+
 @Table(name = "HotelOption")
 @Entity
 public class HotelOption {
@@ -11,20 +16,39 @@ public class HotelOption {
     @Column(name = "optionId", nullable = false)
     private Integer id;
 
+    @Column(name = "optionName")
+    private String optionName;
+
+    @Column(name = "optionPrice")
+    private Double optionPrice;
+
+    @ManyToMany(mappedBy="options")
+    private Set<Reservation> reservations;
+
     @ManyToOne
     @JoinColumn(name = "hotelId")
     private Hotel hotel;
 
-    @ManyToMany(mappedBy="options")
-    private Set<Reservation> reservations;
+
+    public Hotel getHotel() {
+        return hotel;
+    }
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
+    }
+    public Double getOptionPrice() {
+        return optionPrice;
+    }
+    public void setOptionPrice(Double optionPrice) {
+        this.optionPrice = optionPrice;
+    }
+
     public Set<Reservation> getReservations() {
         return reservations;
     }
     public void setReservations(Set<Reservation> reservations) {
         this.reservations= reservations;
     }
-    @Column(name = "optionName")
-    private String optionName;
 
     @Column(name = "optionPrice")
     private Double optionPrice;
@@ -35,6 +59,7 @@ public class HotelOption {
     public void setOptionName(String optionName) {
         this.optionName = optionName;
     }
+
     public Integer getId() {
         return id;
     }

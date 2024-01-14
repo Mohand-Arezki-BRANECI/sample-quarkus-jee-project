@@ -6,15 +6,11 @@ import fr.pantheonsorbonne.ufr27.miage.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MultivaluedMap;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import top.net.resource.AvailabilityService;
-import top.net.resource.BankService;
-import top.net.resource.LocationService;
-import top.net.resource.VendorService;
+import top.net.resource.*;
 import jakarta.ws.rs.core.Response;
 
 
@@ -23,11 +19,10 @@ import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -46,10 +41,18 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     @RestClient
     AvailabilityService availabilityService;
 
+    @Inject
+    @RestClient
+    OptionsService optionsService;
+
 
     @Inject
     @RestClient
     BankService bankService;
+
+    @Inject
+    @RestClient
+    LoginService loginService;
 
 
     TextTerminal<?> terminal;
@@ -60,6 +63,12 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     private String startDateString;
     private String endDateString;
     private int nbGuests;
+    private int selectedLocationId;
+
+    private int selectedHotelId;
+    private String selectedHotelName;
+    private Availability selectedAvailability;
+    private List<HotelOption> selectedOptions = new ArrayList<>();;
     public void displayAvailableGigsToCli() {
         terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
@@ -71,28 +80,171 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     public void askForHotelLocation() {
         terminal.println("Welcome to Booking");
         terminal.println("Please select from the location we provide here");
-        for (HotelLocation hotelLocation : locationService.getHotelLocations()) {
+
+        Collection<HotelLocation> hotelLocations = locationService.getHotelLocations();
+
+        for (HotelLocation hotelLocation : hotelLocations) {
             terminal.println("[" + hotelLocation.getLocationName() + "] " + hotelLocation.getLongitude() + " " + hotelLocation.getLatitude());
         }
-        String hotelName = textIO.newStringInputReader().withPossibleValues(locationService.getHotelLocations().stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
+
+        String selectedHotelLocation = textIO.newStringInputReader().withPossibleValues(hotelLocations.stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
+
+
+        // Find the HotelLocation based on the selected name
+        HotelLocation selectedLocation = hotelLocations.stream()
+                .filter(HotelLocation.class::isInstance)
+                .filter(hotelLocation -> ((HotelLocation) hotelLocation).getLocationName().equals(selectedHotelLocation))
+                .findFirst()
+                .map(HotelLocation.class::cast)
+                .orElse(null);
+
+        // Check if a location is found and extract the ID
+        if (selectedLocation != null) {
+            selectedLocationId = selectedLocation.getId();
+            // Now you can use the selectedLocationId as needed
+            terminal.println("You selected location: " + selectedHotelLocation );
+        } else {
+            terminal.println("Invalid selection. Please try again.");
+            // Handle the case where the selected location is not found.
+        }
     }
 
 
     public void askForHotel(){
 
-        terminal.println("this.startDate---->" + this.startDateString);
-        terminal.println("this.endDate---->" + this.endDateString);
-        terminal.println("Type de this.endDateString : " + this.endDateString.getClass().getName());
+        Collection<Availability> availableHotels = availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString, this.selectedLocationId);
 
+        for (Availability availability : availableHotels) {
+            terminal.println("[" + availability.getHotel().getHotelName()+ "] " );
+        }
 
-        for (Hotel hotel : availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString)) {
-            terminal.println("ajung aici");
-            terminal.println("[" + hotel.getHotelName()+ "] " );
+        this.selectedHotelName = textIO.newStringInputReader().withPossibleValues(availableHotels.stream().map(a -> a.getHotel().getHotelName()).collect(Collectors.toList())).read("Which hotel?");
+
+        // Find the selected availability by hotel name
+       Availability selectedAvailability = availableHotels.stream()
+                .filter(availability -> availability.getHotel().getHotelName().equals(selectedHotelName))
+                .findFirst()
+                .orElse(null);
+
+        if (selectedAvailability != null) {
+            // Save the selected hotel ID
+            this.selectedAvailability = selectedAvailability;
+            this.selectedHotelId = selectedAvailability.getHotel().getId();
+        } else {
+            terminal.println("Invalid selection or hotel not found.");
         }
     }
+
+    public void askForOptions() {
+        List<HotelOption> hotelOptions = optionsService.getHotelOptions(this.selectedHotelId);
+
+        terminal.println("Available options for the selected hotel:");
+
+        for (HotelOption hotelOption : hotelOptions) {
+            terminal.println(  hotelOption.getName());
+        }
+
+
+        while (true) {
+            String userInput = textIO.newStringInputReader().read("Enter the name of the option you want to select (or type 'done' to finish):");
+
+            if (userInput.equalsIgnoreCase("done")) {
+                break;
+            }
+
+            HotelOption selectedOption = findOptionByName(userInput, hotelOptions);
+
+            if (selectedOption != null) {
+                this.selectedOptions.add(selectedOption);
+                terminal.println("Option " + selectedOption.getName() + " added.");
+            } else {
+                terminal.println("Invalid option name. Please try again.");
+            }
+        }
+
+        // Process the selected options as needed
+        processSelectedOptions();
+    }
+
+    public void askToLogIn() {
+        terminal.println("In order to complete your reservation, you must log in!");
+        String userInput = textIO.newStringInputReader().read("Do you already have an account(yes/no)?");
+
+        if (userInput.equals("yes")) {
+            terminal.println("You can log in now:");
+            String emailInput = textIO.newStringInputReader().read("Email:");
+            String passwordInput = textIO.newStringInputReader().read("Password:");
+            try {
+                Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
+                if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
+                    String successMessage = loginResponse.readEntity(String.class);
+                    terminal.println(successMessage);
+                } else {
+                    String errorMessage = loginResponse.readEntity(String.class);
+                    showErrorMessage("Login failed. " + errorMessage);
+                }
+
+            } catch (WebApplicationException e) {
+                String respStr = e.getResponse().readEntity(String.class);
+                terminal.println(respStr);
+            }
+        }
+
+    }
+
+    private HotelOption findOptionByName(String optionName, List<HotelOption> hotelOptions) {
+        return hotelOptions.stream()
+                .filter(option -> option.getName().equalsIgnoreCase(optionName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void processSelectedOptions() {
+        terminal.println("Selected Options:");
+
+        for (HotelOption option : this.selectedOptions) {
+            terminal.println( "Name: " + option.getName() + ", Price: " + option.getOptionPrice());
+        }
+    }
+
+    public void displayReservationDetails() {
+        double optionsPrice = 0.0;
+        terminal.println("Your reservation details are:");
+        terminal.println("Hotel name: " + selectedHotelName);
+        terminal.println("Number of guests:" + nbGuests);
+        terminal.println("Start date: " + startDateString );
+        terminal.println("End date: " + startDateString );
+        terminal.println("Options: ");
+        for (HotelOption option : this.selectedOptions) {
+            terminal.println( "Name: " + option.getName() + "Price " + option.getOptionPrice());
+            optionsPrice = optionsPrice + option.getOptionPrice();
+        }
+        terminal.println("Options price " + optionsPrice);
+
+    public void displayReservationDetails() {
+        double optionsPrice = 0.0;
+        terminal.println("Your reservation details:");
+        terminal.println("Hotel name: " + selectedHotelName);
+        terminal.println("Number of guests:" + nbGuests);
+        terminal.println("Start date: " + startDateString );
+        terminal.println("End date: " + startDateString );
+        terminal.println("Options: ");
+        for (HotelOption option : this.selectedOptions) {
+            terminal.println( "Name: " + option.getName() + " Price:   " + option.getOptionPrice());
+            optionsPrice = optionsPrice + option.getOptionPrice();
+        }
+        terminal.println("Options price:   " + optionsPrice);
+        double totalPrice = optionsPrice + selectedAvailability.getPrice();
+        terminal.println("Final price:   "+ totalPrice);
+
+
+    }
+
+
+    }
+
     public void askForNumberOfGuests() {
         this.nbGuests = textIO.newIntInputReader().read("How many guests?");
-
     }
 
     public void askForDates() throws ParseException {

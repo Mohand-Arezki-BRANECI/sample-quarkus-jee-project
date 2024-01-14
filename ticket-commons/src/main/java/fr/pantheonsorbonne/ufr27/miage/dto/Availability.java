@@ -8,17 +8,29 @@ public class Availability {
     private int numberFreeRooms;
     private Date date ;
     private Hotel hotel;
-    public Availability(int bedsNumber,int numberFreeRooms,  Hotel hotel, Date date) {
+
+    private Double price;
+
+    public Availability() {}
+    public Availability(int bedsNumber,int numberFreeRooms,  Hotel hotel, Date date, Double price) {
 
         this.bedsNumber =bedsNumber;
         this.numberFreeRooms =numberFreeRooms;
         this.hotel = hotel ;
         this.date = date;
+        this.price = price;
+    }
+
+    public Availability(Hotel hotel, Double price) {
+        this.hotel = hotel ;
+        this.price = price;
     }
     public Hotel getHotel() {
         return hotel;
     }
     public Date getDate(){return date;}
+
+    public Double getPrice(){return price;}
     public int getNumberFreeRooms(){return numberFreeRooms;}
     public int getBedsNumber(){return bedsNumber;}
 
