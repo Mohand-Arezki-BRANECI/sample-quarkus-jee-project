@@ -24,22 +24,50 @@ public class TransactionGatewayImpl implements TransactionGateway {
     protected BankService bankService;
 
     @Override
-    public void sendTransaction(TransactionDTO transaction){
+    public String makeTransaction(TransactionDTO transaction){
+        String transferPurpose = transaction.getTransactionPurpose();
+
         try (ProducerTemplate producer = context.createProducerTemplate()) {
-            producer.sendBody("direct:sendTransactionToAllBanks", transaction);
+            producer.sendBodyAndHeader("direct:sendTransactionToAllBanks", transaction, "transferPurpose", transferPurpose);
         } catch (IOException e) {
-            e.printStackTrace();
+            return "There was a problem with the generation of the transaction request. Please try later again.";
         }
+
+        String responseMessage = switch (transferPurpose) {
+            case "clientPayment" -> "Your payment request for Booking has been registered. Please stand by...";
+            case "bookingPayment" -> "The payment request for the Hotel has been registered. Please stand by...";
+            case "cancellation" -> "Your refund request has been registered. Please stand by...";
+            default ->  "Your Transaction request is of unknown nature.";
+        };
+
+        return responseMessage;
     }
 
     @Override
-    public boolean shouldProcess(TransactionDTO transaction) {
+    public boolean isSendingBank(TransactionDTO transaction) {
+        long fromBank = transaction.getFromBankId();
+
+        Bank thisBank = bankService.getBankObject();
+
+        return fromBank == thisBank.getBankId();
+    }
+
+    @Override
+    public boolean isReceivingBank(TransactionDTO transaction) {
         long toBankId = transaction.getToBankId();
 
         Bank thisBank = bankService.getBankObject();
-        System.out.println(thisBank.getBankname());
-        // TODO: Add bankID
 
         return toBankId == thisBank.getBankId();
+    }
+
+    @Override
+    public boolean isSendingAndReceiving(TransactionDTO transaction){
+        long toBankId = transaction.getToBankId();
+        long fromBank = transaction.getFromBankId();
+
+        Bank thisBank = bankService.getBankObject();
+
+        return toBankId == thisBank.getBankId() && fromBank == thisBank.getBankId();
     }
 }

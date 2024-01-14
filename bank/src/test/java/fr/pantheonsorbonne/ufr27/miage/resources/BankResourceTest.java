@@ -32,9 +32,9 @@ class BankResourceTest {
 
     @Test
     void createTransaction() throws AccountNotFoundException , NotEnoughMoneyException {
-        TransactionDTO transaction = new TransactionDTO(testData.email(), testData.password(), testData.toAccount(), testData.toBank(), testData.fromAccount(), testData.fromBank(), testData.amount());
-        TransactionDTO transactionBoggusEmail = new TransactionDTO("wrongEmail", testData.password(), testData.toAccount(), testData.toBank(), testData.fromAccount(), testData.fromBank(), testData.amount());
-        TransactionDTO transactionBoggusAmount = new TransactionDTO(testData.email(), testData.password(), testData.toAccount(), testData.toBank(), testData.fromAccount(), testData.fromBank(), 1000000000);
+        TransactionDTO transaction = new TransactionDTO(testData.email(), testData.password(), testData.toAccount(), testData.toBank(), testData.fromAccount(), testData.fromBank(), testData.amount(), testData.transactionPurpose(), testData.reservationId());
+        TransactionDTO transactionBoggusEmail = new TransactionDTO("wrongEmail", testData.password(), testData.toAccount(), testData.toBank(), testData.fromAccount(), testData.fromBank(), testData.amount(),testData.transactionPurpose(), testData.reservationId());
+        TransactionDTO transactionBoggusAmount = new TransactionDTO(testData.email(), testData.password(), testData.toAccount(), testData.toBank(), testData.fromAccount(), testData.fromBank(), 1000000000,testData.transactionPurpose(),testData.reservationId());
 
         given()
                 .contentType("application/json")

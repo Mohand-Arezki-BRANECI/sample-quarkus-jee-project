@@ -35,13 +35,14 @@ public class Main implements Runnable {
             try {
 
                 // booking-cli
-                eCommerce.askForHotelLocation();
-                eCommerce.askForDates();
-                eCommerce.askForNumberOfGuests();
-                eCommerce.askForHotel();
+                // eCommerce.askForHotelLocation();
+                // eCommerce.askForDates();
+                // eCommerce.askForNumberOfGuests();
+                // eCommerce.askForHotel();
 
                 // bank
                 eCommerce.sendPayment();
+                eCommerce.cancelReservation();
 
                 //eCommerce.askForHotelLocation();
                 // eCommerce.displayAvailableGigsToCli();

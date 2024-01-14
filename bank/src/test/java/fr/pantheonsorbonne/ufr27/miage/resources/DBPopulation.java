@@ -72,9 +72,11 @@ public class DBPopulation {
 
         long toAccount = 1;
         long toBank  = 1;
-
         double amount = 100;
-        return new TestData(fromAccount,fromBank,toAccount,toBank,email,password,amount);
+        String transactionPurpose = "Payment";
+        String reservationId = "1";
+
+        return new TestData(fromAccount,fromBank,toAccount,toBank,email,password,amount,transactionPurpose,reservationId);
 
 
     }

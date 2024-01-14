@@ -1,7 +1,5 @@
 package fr.pantheonsorbonne.ufr27.miage.camel;
 
-
-import fr.pantheonsorbonne.ufr27.miage.dto.Booking;
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import fr.pantheonsorbonne.ufr27.miage.service.BankService;
 import fr.pantheonsorbonne.ufr27.miage.service.TransactionGateway;
@@ -26,7 +24,6 @@ public class CamelRoutes extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        camelContext.setTracing(true);
 
         from("direct:sendTransactionToAllBanks")//
                 .marshal().json()
@@ -36,16 +33,46 @@ public class CamelRoutes extends RouteBuilder {
 
         from("sjms2:topic:transactionTopic")
                 .unmarshal().json(TransactionDTO.class)
-                .filter()
-                .method(TransactionGateway.class,"shouldProcess")
-                .to("direct:processMessage")
-                .end();
+                .choice()
+                    .when().method(TransactionGateway.class, "isSendingAndReceiving")
+                            .to("direct:processSendingAndReceiving")
+                    .when().method(TransactionGateway.class, "isSendingBank")
+                        .to("direct:processSending")
+                    .when().method(TransactionGateway.class, "isReceivingBank")
+                        .to("direct:processReceiving")
+                    .otherwise()
+                        .log("No valid condition matched. Dropping the message.")
+                .endChoice();
+
+        from("direct:processSendingAndReceiving")
+                .bean(BankService.class, "handleSendAndReceiveTransaction")
+                .marshal().json()
+                .log("Transaction has been successfully processed")
+                .to("direct:responseEndpoint");
 
 
-        from("direct:processMessage")
-                .log("Transaction received")
+        from("direct:processSending")
+                .bean(BankService.class, "handleSendTransaction")
+                .marshal().json()
+                .log("Transaction has been sent");
+
+        from("direct:processReceiving")
                 .bean(BankService.class, "handleReceivedTransaction")
                 .marshal().json()
-                .log("Transaction added and balance updated");
+                .log("Transaction has been received")
+                .to("direct:responseEndpoint");
+
+        from("direct:responseEndpoint")
+                .choice()
+                    .when(header("transferPurpose").isEqualTo("clientPayment"))
+                        .to("sjms2:topic:clientPaymentResponse")
+                    .when(header("transferPurpose").isEqualTo("bookingPayment"))
+                        .to("sjms2:topic:bookingPaymentResponse")
+                    .when(header("transferPurpose").isEqualTo("cancellation"))
+                        .to("sjms2:topic:cancellationPaymentResponse")
+                .end();
+
     }
+
+
 }

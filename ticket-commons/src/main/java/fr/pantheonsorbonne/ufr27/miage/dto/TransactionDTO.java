@@ -1,6 +1,8 @@
 package fr.pantheonsorbonne.ufr27.miage.dto;
 
 public class TransactionDTO {
+
+    private Long transactionId;
     private String email;
     private String password;
     private long toAccountId;
@@ -12,13 +14,14 @@ public class TransactionDTO {
     private long fromBankId;
     private double amount;
 
-    // Constructors
+    private String reservationId;
 
-    public TransactionDTO() {
-        // Default constructor
-    }
+    private String transactionPurpose;
 
-    public TransactionDTO(String email, String password, long toAccount, long toBankId, long fromAccount, long fromBankId, double amount) {
+
+    public TransactionDTO() {}
+
+    public TransactionDTO(String email, String password, long toAccount, long toBankId, long fromAccount, long fromBankId, double amount, String transactionPurpose, String reservationId) {
         this.email = email;
         this.password = password;
         this.toAccountId = toAccount;
@@ -26,10 +29,17 @@ public class TransactionDTO {
         this.fromBankId = fromBankId;
         this.fromAccountId = fromAccount;
         this.amount = amount;
+        this.reservationId = reservationId;
+        this.transactionPurpose = transactionPurpose;
 
     }
 
-    // Getters and Setters
+    public Long getTransactionId() {
+        return transactionId;
+    }
+    public void setTransactionId(Long transactionId) {
+        this.transactionId = transactionId;
+    }
 
     public String getEmail() {
         return email;
@@ -85,6 +95,36 @@ public class TransactionDTO {
 
     public void setFromBankId(long fromBankId) {
         this.fromBankId = fromBankId;
+    }
+
+    public String getTransactionPurpose() {
+        return transactionPurpose;
+    }
+    public void setTransactionPurpose(String transactionPurpose) {
+        this.transactionPurpose = transactionPurpose;
+    }
+
+    public String getReservationId() {
+        return reservationId;
+    }
+    public void setReservationId(String reservationId) {
+        this.reservationId = reservationId;
+    }
+
+    @Override
+    public String toString() {
+        return "TransactionDTO{" +
+                "transactionId=" + transactionId +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", toAccountId=" + toAccountId +
+                ", toBankId=" + toBankId +
+                ", fromAccountId=" + fromAccountId +
+                ", fromBankId=" + fromBankId +
+                ", amount=" + amount +
+                ", reservationId='" + reservationId + '\'' +
+                ", transactionPurpose='" + transactionPurpose + '\'' +
+                '}';
     }
 }
 
