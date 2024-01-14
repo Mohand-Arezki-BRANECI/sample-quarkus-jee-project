@@ -8,10 +8,6 @@ REPLACE INTO `HotelOption` (`optionName`,`optionPrice`,`hotelId`) VALUES ('Spa',
 REPLACE INTO `HotelOption` (`optionName`,`optionPrice`,`hotelId`) VALUES ('Pool',40,1);
 REPLACE INTO `HotelOption` (`optionName`,`optionPrice`,`hotelId`) VALUES ('Parking',15.6,2);
 
-REPLACE INTO `HotelOptions` (`hotels_hotelId`,`options_optionId`) VALUES (1,1);
-REPLACE INTO `HotelOptions` (`hotels_hotelId`,`options_optionId`) VALUES (1,2);
-REPLACE INTO `HotelOptions` (`hotels_hotelId`,`options_optionId`) VALUES (2,2);
-
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`,`roomPrice`) VALUES (1,5,'2024-12-12',2,45.5);
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`,`roomPrice`) VALUES (1,3,'2023-12-13',3,34);
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`,`roomPrice`) VALUES (1,7,'2024-12-13',2,100.5);
