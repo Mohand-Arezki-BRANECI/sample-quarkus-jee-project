@@ -4,15 +4,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class HotelLocation {
+    private Integer id;
     private String locationName;
     private String longitude;
     private String latitude;
 
     // Constructor
-    public HotelLocation(String locationName, String longitude, String latitude) {
+    public HotelLocation(String locationName, String longitude, String latitude, Integer id) {
         this.locationName = locationName;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.id = id;
     }
 
     public HotelLocation(){};
@@ -29,6 +31,10 @@ public class HotelLocation {
 
     public String getLatitude() {
         return latitude;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     // Setter methods (if needed)

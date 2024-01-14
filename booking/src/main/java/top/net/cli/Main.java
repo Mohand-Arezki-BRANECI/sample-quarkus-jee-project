@@ -35,19 +35,18 @@ public class Main implements Runnable {
             try {
 
                 // booking-cli
-                // eCommerce.askForHotelLocation();
-                // eCommerce.askForDates();
-                // eCommerce.askForNumberOfGuests();
-                // eCommerce.askForHotel();
+                eCommerce.askToLogIn();
+                eCommerce.askForHotelLocation();
+                eCommerce.askForDates();
+                eCommerce.askForNumberOfGuests();
+                eCommerce.askForHotel();
+                eCommerce.askForOptions();
+                eCommerce.displayReservationDetails();
 
                 // bank
                 eCommerce.sendPayment();
                 eCommerce.cancelReservation();
 
-                //eCommerce.askForHotelLocation();
-                // eCommerce.displayAvailableGigsToCli();
-                // Booking booking = eCommerce.getBookingFromOperator();
-                // bookingGateway.sendBookingOrder(booking.getStandingTicketsNumber(), booking.getSeatingTicketsNumber(), booking.getVenueId());
             } catch (Exception e) {
                 eCommerce.showErrorMessage(e.getMessage());
             }

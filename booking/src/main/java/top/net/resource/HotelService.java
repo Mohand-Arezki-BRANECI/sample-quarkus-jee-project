@@ -26,7 +26,7 @@ public class HotelService {
     @GET
     public Integer checkRoomAvailability(/*
                                     @QueryParam("startDate") String startDate,
-                                    @QueryParam("endDate") String startDate,
+                                    @QueryParam("endDate") String endDates,
                                     @QueryParam("nbrBeds") Integer nbrBeds,*/) {
         return null;
     }

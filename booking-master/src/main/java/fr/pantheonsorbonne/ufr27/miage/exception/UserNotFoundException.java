@@ -1,0 +1,7 @@
+package fr.pantheonsorbonne.ufr27.miage.exception;
+
+public class UserNotFoundException extends Throwable {
+    public UserNotFoundException(String message){
+        super(message);
+    }
+}
