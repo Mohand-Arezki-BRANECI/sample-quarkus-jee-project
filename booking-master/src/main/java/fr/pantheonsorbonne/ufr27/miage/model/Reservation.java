@@ -34,8 +34,6 @@ public class Reservation {
     private Date endDate;
     @Column(name = "bedsNumber", nullable = false)
     private Integer bedsNumber;
-    @Column(name = "roomsNumber", nullable = false)
-    private Integer roomsNumber;
     @Column(name = "bookingDate")
     private Date bookingDate;
     public Integer getId() {
@@ -52,8 +50,6 @@ public class Reservation {
     public void setEndDate(Date endDate) {this.endDate = endDate;}
     public Integer getBedsNumber() {return bedsNumber;}
     public void setBedsNumber(Integer bedsNumber){this.bedsNumber = bedsNumber;}
-    public Integer getRoomsNumber() {return roomsNumber;}
-    public void setRoomsNumber(Integer roomsNumber){this.roomsNumber = roomsNumber;}
     public Date getBookingDate() {return bookingDate;}
     public void setBookingDate(Date bookingDate){this.bookingDate = bookingDate;}
     public User getUser() {return user;}
