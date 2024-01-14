@@ -26,6 +26,9 @@ public class Reservation {
     public void setOptions(Set<HotelOption> options) {
         this.options= options;
     }
+
+    @Column(name = "reservationNumber", nullable = false)
+    private Integer reservationNumber ;
     @Column(name = "status", nullable = false)
     private String status ;
     @Column(name = "startDate", nullable = false)
@@ -42,6 +45,9 @@ public class Reservation {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public Integer getReservationNumber() {return reservationNumber;}
+    public void setReservationNumber(Integer reservationNumber) {this.reservationNumber = reservationNumber;}
     public String getStatus(){return status;}
     public void setStatus(String status) {this.status = status;}
     public Date getStartDate(){return startDate;}

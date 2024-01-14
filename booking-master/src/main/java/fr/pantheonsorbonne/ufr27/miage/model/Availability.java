@@ -29,8 +29,10 @@ public class Availability {
 
     @Column(name = "bedsNumber")
     private Integer bedsNumber;
+
     @Column(name = "roomPrice")
     private Double roomPrice;
+
     public Integer getId() {
         return id;
     }

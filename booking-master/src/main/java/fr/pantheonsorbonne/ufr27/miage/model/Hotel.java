@@ -22,15 +22,7 @@ public class Hotel {
     @ManyToOne
     @JoinColumn(name = "locationId")
     private HotelLocation hotelLocation;
-    @ManyToMany
-    @JoinTable(name="HotelOptions")
-    private Set<HotelOption> options;
-    public Set<HotelOption> getOptions() {
-        return options;
-    }
-    public void setOptions(Set<HotelOption> options) {
-        this.options= options;
-    }
+
     @Column(name = "hotelName", nullable = false, length = 45)
     private String hotelName;
 
