@@ -19,7 +19,6 @@ public interface UserInterfaceCLI extends BiConsumer<TextIO, RunnerData>, UserIn
     void askToLogIn();
 
     void displayReservationDetails();
-
     // bank
     void sendPayment();
 }

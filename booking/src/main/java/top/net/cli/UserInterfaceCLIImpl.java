@@ -67,6 +67,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     private int selectedHotelId;
     private String selectedHotelName;
+    private Availability selectedAvailability;
     private List<HotelOption> selectedOptions = new ArrayList<>();;
     public void displayAvailableGigsToCli() {
         terminal.println("VendorId=" + vendorId);
@@ -111,25 +112,24 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     public void askForHotel(){
 
-        Collection<Hotel> availableHotels = availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString, this.selectedLocationId);
+        Collection<Availability> availableHotels = availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString, this.selectedLocationId);
 
-        for (Hotel hotel : availableHotels) {
-            terminal.println("[" + hotel.getHotelName()+ "] " );
+        for (Availability availability : availableHotels) {
+            terminal.println("[" + availability.getHotel().getHotelName()+ "] " );
         }
 
-        this.selectedHotelName = textIO.newStringInputReader().withPossibleValues(availableHotels.stream().map(Hotel::getHotelName).collect(Collectors.toList())).read("Which hotel?");
+        this.selectedHotelName = textIO.newStringInputReader().withPossibleValues(availableHotels.stream().map(a -> a.getHotel().getHotelName()).collect(Collectors.toList())).read("Which hotel?");
 
-
-        // Find the selected hotel by name
-        Hotel selectedHotel = availableHotels.stream()
-                .filter(hotel -> hotel.getHotelName().equals(selectedHotelName))
+        // Find the selected availability by hotel name
+       Availability selectedAvailability = availableHotels.stream()
+                .filter(availability -> availability.getHotel().getHotelName().equals(selectedHotelName))
                 .findFirst()
                 .orElse(null);
 
-        if (selectedHotel != null) {
+        if (selectedAvailability != null) {
             // Save the selected hotel ID
-            this.selectedHotelId = selectedHotel.getId();
-            terminal.println("Selected Hotel ID: " + this.selectedHotelId);
+            this.selectedAvailability = selectedAvailability;
+            this.selectedHotelId = selectedAvailability.getHotel().getId();
         } else {
             terminal.println("Invalid selection or hotel not found.");
         }
@@ -141,7 +141,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Available options for the selected hotel:");
 
         for (HotelOption hotelOption : hotelOptions) {
-            terminal.println("[ ici ] " + hotelOption.getName());
+            terminal.println(  hotelOption.getName());
         }
 
 
@@ -203,7 +203,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Selected Options:");
 
         for (HotelOption option : this.selectedOptions) {
-            terminal.println( "Name: " + option.getName() + ", Price " + option.getOptionPrice());
+            terminal.println( "Name: " + option.getName() + ", Price: " + option.getOptionPrice());
         }
     }
 
@@ -221,6 +221,24 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
         terminal.println("Options price " + optionsPrice);
 
+    public void displayReservationDetails() {
+        double optionsPrice = 0.0;
+        terminal.println("Your reservation details:");
+        terminal.println("Hotel name: " + selectedHotelName);
+        terminal.println("Number of guests:" + nbGuests);
+        terminal.println("Start date: " + startDateString );
+        terminal.println("End date: " + startDateString );
+        terminal.println("Options: ");
+        for (HotelOption option : this.selectedOptions) {
+            terminal.println( "Name: " + option.getName() + " Price:   " + option.getOptionPrice());
+            optionsPrice = optionsPrice + option.getOptionPrice();
+        }
+        terminal.println("Options price:   " + optionsPrice);
+        double totalPrice = optionsPrice + selectedAvailability.getPrice();
+        terminal.println("Final price:   "+ totalPrice);
+
+
+    }
 
 
     }
