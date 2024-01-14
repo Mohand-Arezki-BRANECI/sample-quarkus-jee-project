@@ -19,6 +19,7 @@ import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -62,6 +63,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     private int selectedHotelId;
     private String selectedHotelName;
+    private List<HotelOption> selectedOptions = new ArrayList<>();;
     public void displayAvailableGigsToCli() {
         terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
@@ -129,13 +131,54 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
     }
 
-    public void askForOptions(){
-        List <HotelOption> hotelOptions = optionsService.getHotelOptions(this.selectedHotelId);
+    public void askForOptions() {
+        List<HotelOption> hotelOptions = optionsService.getHotelOptions(this.selectedHotelId);
+
+        terminal.println("Available options for the selected hotel:");
 
         for (HotelOption hotelOption : hotelOptions) {
-            terminal.println("Options name" + hotelOption.getName());
+            terminal.println("[ ici ] " + hotelOption.getName());
+        }
+
+
+        while (true) {
+            String userInput = textIO.newStringInputReader().read("Enter the name of the option you want to select (or type 'done' to finish):");
+
+            if (userInput.equalsIgnoreCase("done")) {
+                break;
+            }
+
+            HotelOption selectedOption = findOptionByName(userInput, hotelOptions);
+
+            if (selectedOption != null) {
+                this.selectedOptions.add(selectedOption);
+                terminal.println("Option " + selectedOption.getName() + " added.");
+            } else {
+                terminal.println("Invalid option name. Please try again.");
+            }
+        }
+
+        // Process the selected options as needed
+        processSelectedOptions();
+    }
+
+    private HotelOption findOptionByName(String optionName, List<HotelOption> hotelOptions) {
+        return hotelOptions.stream()
+                .filter(option -> option.getName().equalsIgnoreCase(optionName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void processSelectedOptions() {
+        terminal.println("Selected Options:");
+
+        for (HotelOption option : this.selectedOptions) {
+            terminal.println( "Name: " + option.getName() + ", Price " + option.getOptionPrice());
         }
     }
+
+
+
 
     public void askForNumberOfGuests() {
         this.nbGuests = textIO.newIntInputReader().read("How many guests?");
