@@ -15,6 +15,7 @@ public interface UserInterfaceCLI extends BiConsumer<TextIO, RunnerData>, UserIn
     void askForDates() throws ParseException;
     void askForNumberOfGuests();
     void askForHotel();
+    void askForOptions();
 
     // bank
     void sendPayment();

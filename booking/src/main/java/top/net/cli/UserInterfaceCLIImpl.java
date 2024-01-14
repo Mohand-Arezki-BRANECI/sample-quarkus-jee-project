@@ -6,15 +6,11 @@ import fr.pantheonsorbonne.ufr27.miage.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
-import jakarta.ws.rs.core.MultivaluedMap;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import top.net.resource.AvailabilityService;
-import top.net.resource.BankService;
-import top.net.resource.LocationService;
-import top.net.resource.VendorService;
+import top.net.resource.*;
 import jakarta.ws.rs.core.Response;
 
 
@@ -26,8 +22,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 
@@ -46,6 +40,10 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     @RestClient
     AvailabilityService availabilityService;
 
+    @Inject
+    @RestClient
+    OptionsService optionsService;
+
 
     @Inject
     @RestClient
@@ -61,6 +59,9 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     private String endDateString;
     private int nbGuests;
     private int selectedLocationId;
+
+    private int selectedHotelId;
+    private String selectedHotelName;
     public void displayAvailableGigsToCli() {
         terminal.println("VendorId=" + vendorId);
         for (Gig gig : vendorService.getGigs(vendorId)) {
@@ -79,13 +80,13 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             terminal.println("[" + hotelLocation.getLocationName() + "] " + hotelLocation.getLongitude() + " " + hotelLocation.getLatitude());
         }
 
-        String hotelName = textIO.newStringInputReader().withPossibleValues(locationService.getHotelLocations().stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
+        String selectedHotelLocation = textIO.newStringInputReader().withPossibleValues(hotelLocations.stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
 
 
         // Find the HotelLocation based on the selected name
         HotelLocation selectedLocation = hotelLocations.stream()
                 .filter(HotelLocation.class::isInstance)
-                .filter(hotelLocation -> ((HotelLocation) hotelLocation).getLocationName().equals(hotelName))
+                .filter(hotelLocation -> ((HotelLocation) hotelLocation).getLocationName().equals(selectedHotelLocation))
                 .findFirst()
                 .map(HotelLocation.class::cast)
                 .orElse(null);
@@ -94,7 +95,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         if (selectedLocation != null) {
             selectedLocationId = selectedLocation.getId();
             // Now you can use the selectedLocationId as needed
-            terminal.println("You selected location: " + hotelName + " with ID: " + selectedLocationId);
+            terminal.println("You selected location: " + selectedHotelLocation );
         } else {
             terminal.println("Invalid selection. Please try again.");
             // Handle the case where the selected location is not found.
@@ -104,20 +105,40 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     public void askForHotel(){
 
-        terminal.println("this.startDate---->" + this.startDateString);
-        terminal.println("this.endDate---->" + this.endDateString);
-        terminal.println("Type de this.endDateString : " + this.endDateString.getClass().getName());
+        Collection<Hotel> availableHotels = availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString, this.selectedLocationId);
 
-
-        for (Hotel hotel : availabilityService.getConsistentlyAvailableHotels(this.nbGuests, this.startDateString, this.endDateString, this.selectedLocationId)) {
-            terminal.println("ajung aici locationID --->" + hotel.getLocationId());
-            terminal.println("ajung aici locationID --->" + hotel.getHotelName());
+        for (Hotel hotel : availableHotels) {
             terminal.println("[" + hotel.getHotelName()+ "] " );
         }
+
+        this.selectedHotelName = textIO.newStringInputReader().withPossibleValues(availableHotels.stream().map(Hotel::getHotelName).collect(Collectors.toList())).read("Which hotel?");
+
+
+        // Find the selected hotel by name
+        Hotel selectedHotel = availableHotels.stream()
+                .filter(hotel -> hotel.getHotelName().equals(selectedHotelName))
+                .findFirst()
+                .orElse(null);
+
+        if (selectedHotel != null) {
+            // Save the selected hotel ID
+            this.selectedHotelId = selectedHotel.getId();
+            terminal.println("Selected Hotel ID: " + this.selectedHotelId);
+        } else {
+            terminal.println("Invalid selection or hotel not found.");
+        }
     }
+
+    public void askForOptions(){
+        List <HotelOption> hotelOptions = optionsService.getHotelOptions(this.selectedHotelId);
+
+        for (HotelOption hotelOption : hotelOptions) {
+            terminal.println("Options name" + hotelOption.getName());
+        }
+    }
+
     public void askForNumberOfGuests() {
         this.nbGuests = textIO.newIntInputReader().read("How many guests?");
-
     }
 
     public void askForDates() throws ParseException {

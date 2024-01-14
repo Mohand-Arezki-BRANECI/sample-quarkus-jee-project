@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 @RequestScoped
 public class AvailabilityServiceImp implements AvailabilityService  {
 
-    @PersistenceContext
-    private EntityManager entityManager;
     @Inject
     AvailabilityDAO availabilityDAO;
 
@@ -25,7 +23,7 @@ public class AvailabilityServiceImp implements AvailabilityService  {
         List<Hotel> availableHotels = new ArrayList<>();
         for (Availability initAv :  availabilityDAO.getAvailableHotelsForDate(numberOfGuests, startDate)){
             if( initAv.getHotel().getHotelLocation().getId() == locationId){
-                Hotel hotel = new Hotel(initAv.getHotel().getHotelName());
+                Hotel hotel = new Hotel(initAv.getHotel().getHotelName(), initAv.getHotel().getId());
                 availableHotels.add(hotel);
             }
 
@@ -35,7 +33,7 @@ public class AvailabilityServiceImp implements AvailabilityService  {
             List<Hotel> currentAvailableHotels = new ArrayList<>();
             for (fr.pantheonsorbonne.ufr27.miage.model.Availability currAv : availabilityDAO.getAvailableHotelsForDate(numberOfGuests, currentDate)) {
                 if(currAv.getHotel().getHotelLocation().getId() == locationId){
-                    Hotel hotel = new Hotel(currAv.getHotel().getHotelName());
+                    Hotel hotel = new Hotel(currAv.getHotel().getHotelName(), currAv.getHotel().getId());
                     currentAvailableHotels.add(hotel);
                 }
 

@@ -14,9 +14,6 @@ import java.util.LinkedList;
 @RequestScoped
 public class LocationServiceImp implements LocationService {
 
-    @PersistenceContext
-    EntityManager em;
-
     @Inject
     HotelLocationDAO hotelLocationDAO;
 
