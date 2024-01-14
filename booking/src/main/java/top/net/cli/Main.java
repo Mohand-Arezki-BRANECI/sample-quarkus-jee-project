@@ -40,6 +40,8 @@ public class Main implements Runnable {
                 eCommerce.askForNumberOfGuests();
                 eCommerce.askForHotel();
                 eCommerce.askForOptions();
+                //eCommerce.askToLogIn();
+                eCommerce.displayReservationDetails();
 
                 // bank
                 eCommerce.sendPayment();

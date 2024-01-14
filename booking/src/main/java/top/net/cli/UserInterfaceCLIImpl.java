@@ -50,6 +50,10 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     @RestClient
     BankService bankService;
 
+    @Inject
+    @RestClient
+    LoginService loginService;
+
 
     TextTerminal<?> terminal;
     TextIO textIO;
@@ -162,6 +166,33 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         processSelectedOptions();
     }
 
+    public void askToLogIn() {
+        terminal.println("In order to complete your reservation, you must log in!");
+        String userInput = textIO.newStringInputReader().read("Do you already have an account(yes/no)?");
+
+        if (userInput.equals("yes")) {
+            terminal.println("You can log in now:");
+            String emailInput = textIO.newStringInputReader().read("Email:");
+            String passwordInput = textIO.newStringInputReader().read("Password:");
+            try {
+                Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
+                if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
+
+
+
+                } else {
+                    String errorMessage = loginResponse.readEntity(String.class);
+                    showErrorMessage("Login failed. " + errorMessage);
+                }
+
+            } catch (WebApplicationException e) {
+                String respStr = e.getResponse().readEntity(String.class);
+                terminal.println(respStr);
+            }
+        }
+
+    }
+
     private HotelOption findOptionByName(String optionName, List<HotelOption> hotelOptions) {
         return hotelOptions.stream()
                 .filter(option -> option.getName().equalsIgnoreCase(optionName))
@@ -177,8 +208,23 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
     }
 
+    public void displayReservationDetails() {
+        double optionsPrice = 0.0;
+        terminal.println("Your reservation details are:");
+        terminal.println("Hotel name: " + selectedHotelName);
+        terminal.println("Number of guests:" + nbGuests);
+        terminal.println("Start date: " + startDateString );
+        terminal.println("End date: " + startDateString );
+        terminal.println("Options: ");
+        for (HotelOption option : this.selectedOptions) {
+            terminal.println( "Name: " + option.getName() + "Price " + option.getOptionPrice());
+            optionsPrice = optionsPrice + option.getOptionPrice();
+        }
+        terminal.println("Options price " + optionsPrice);
 
 
+
+    }
 
     public void askForNumberOfGuests() {
         this.nbGuests = textIO.newIntInputReader().read("How many guests?");
