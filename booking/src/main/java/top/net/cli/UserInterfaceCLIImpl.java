@@ -6,6 +6,8 @@ import fr.pantheonsorbonne.ufr27.miage.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -17,6 +19,7 @@ import jakarta.ws.rs.core.Response;
 
 
 import java.awt.*;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -58,6 +61,9 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
 
     @Inject
+    CamelContext context;
+
+    @Inject
     @RestClient
     LoginService loginService;
 
@@ -85,7 +91,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
 
     public void askForHotelLocation() {
-        terminal.println("Welcome to Booking");
         terminal.println("Please select from the location we provide here");
 
         Collection<HotelLocation> hotelLocations = locationService.getHotelLocations();
@@ -114,6 +119,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             terminal.println("Invalid selection. Please try again.");
             // Handle the case where the selected location is not found.
         }
+
     }
 
 
@@ -174,28 +180,32 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     }
 
     public void askToLogIn() {
-        terminal.println("In order to complete your reservation, you must log in!");
-        String userInput = textIO.newStringInputReader().read("Do you already have an account(yes/no)?");
-
-        if (userInput.equals("yes")) {
-            terminal.println("You can log in now:");
-            String emailInput = textIO.newStringInputReader().read("Email:");
-            String passwordInput = textIO.newStringInputReader().read("Password:");
-            try {
-                Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
-                if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
-                    String successMessage = loginResponse.readEntity(String.class);
-                    terminal.println(successMessage);
-                } else {
-                    String errorMessage = loginResponse.readEntity(String.class);
-                    showErrorMessage("Login failed. " + errorMessage);
+        terminal.println("Please login with your credentials:");
+        String emailInput = textIO.newStringInputReader().read("Email:");
+        String passwordInput = textIO.newStringInputReader().read("Password:");
+        try {
+            Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
+            if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
+                UserDTO successMessage = loginResponse.readEntity(UserDTO.class);
+                try (ProducerTemplate producer = context.createProducerTemplate()) {
+                    producer.sendBodyAndHeader("direct:bookingFront", successMessage, "loginStatus", "bookingLoginSuccess");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-            } catch (WebApplicationException e) {
-                String respStr = e.getResponse().readEntity(String.class);
-                terminal.println(respStr);
+            } else {
+                String errorMessage = loginResponse.readEntity(String.class);
+                try (ProducerTemplate producer = context.createProducerTemplate()) {
+                    producer.sendBodyAndHeader("direct:bookingFront", errorMessage, "loginStatus", "bookingLoginError");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
+        } catch (WebApplicationException e) {
+            String respStr = e.getResponse().readEntity(String.class);
+            terminal.println(respStr);
         }
+
 
     }
 
@@ -229,6 +239,8 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Options price " + optionsPrice);
         double totalPrice = optionsPrice + selectedAvailability.getPrice();
         terminal.println("Final price:   "+ totalPrice);
+
+
 
     }
 

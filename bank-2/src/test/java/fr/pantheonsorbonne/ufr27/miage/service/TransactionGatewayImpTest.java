@@ -19,10 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class TransactionGatewayImpTest {
 
     @Inject
-    TransactionGatewayImpl transactionGateway;
+    TransactionGateway transactionGateway;
 
-    @Inject
-    BankServiceImp bankService;
 
     @Inject
     DBPopulation pop;

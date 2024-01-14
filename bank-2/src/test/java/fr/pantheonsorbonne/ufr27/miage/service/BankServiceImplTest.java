@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class BankServiceImplTest {
 
     @Inject
-    BankServiceImp bankService;
+    BankService bankService;
 
     @Inject
     DBPopulation pop;
