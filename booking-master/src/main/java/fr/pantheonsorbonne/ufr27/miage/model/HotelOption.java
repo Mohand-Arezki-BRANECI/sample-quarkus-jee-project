@@ -23,13 +23,13 @@ public class HotelOption {
     @Column(name = "optionPrice")
     private Double optionPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "hotelId")
-    private Hotel hotel;
-
     @ManyToMany(mappedBy = "options")
     @JsonbTransient
     private Set<Reservation> reservations;
+
+    @ManyToOne
+    @JoinColumn(name = "hotelId")
+    private Hotel hotel;
 
 
     public Hotel getHotel() {
