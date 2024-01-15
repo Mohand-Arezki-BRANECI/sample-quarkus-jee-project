@@ -13,6 +13,7 @@ import org.apache.camel.builder.RouteBuilder;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+
 import top.nextnet.cli.UserInterface;
 import top.nextnet.service.TicketingService;
 
