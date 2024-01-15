@@ -1,10 +1,10 @@
 package fr.pantheonsorbonne.ufr27.miage.dto;
 
 public class UserDTO {
-    String name, lastName, emailAddress, phoneNumber;
+    String firstName, lastName, emailAddress, phoneNumber;
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public void setLastName(String lastName) {
@@ -19,8 +19,8 @@ public class UserDTO {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getName() {
-        return name;
+    public String getFirstName() {
+        return firstName;
     }
 
     public String getLastName() {
@@ -36,12 +36,13 @@ public class UserDTO {
     }
 
     public UserDTO(String name, String lastName, String emailAddress, String phoneNumber) {
-        this.name = name;
+        this.firstName = name;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.phoneNumber = phoneNumber;
     }
     public UserDTO() {
-
     }
+
+
 }
