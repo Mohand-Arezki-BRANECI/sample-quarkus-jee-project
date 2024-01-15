@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReservationRequestDTO{
+
+    //  private BookingUserDTO user;
     private UserDTO user;
     private LocalDate from, to;
     private List<String> optionsNames = new ArrayList<>();

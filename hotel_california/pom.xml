@@ -149,6 +149,10 @@
             <version>1.18.22</version> <!-- Make sure to check for the latest version on the Lombok website -->
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
 
     </dependencies>
     <build>
