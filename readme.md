@@ -8,8 +8,8 @@ L'application renvoit une liste de chambres d'hotels qui sont disponible pour la
 Une fois la réservation est confirmée un email de confirmation lui sera envoyé.
 
 Lors de la réservation d'une chambre, on a 2 phases:
-- le booking (réservation coté booking et coté hotel avec option PENDING)
-- Une fois que le paiment a été effectuer, la reservation coté booking passe a CONFIRMED et booking s'occupe de faire de confirmer la reservation coté hotel
+- le booking (réservation coté booking et coté hotel avec Status PENDING)
+- Une fois que le paiment a été effectuer, la reservation coté booking passe a CONFIRMED et booking s'occupe de confirmer la reservation coté hotel
 
 ### Annulation de réservation 
 En cas d'annulation de réservation, L'utilisateur fais une demande d'annulation de sa resérvation (sous contrainte quelle existe) sur Booking. le système de réservation informe l'hotel concerné que la réservation vient d'etre annulée (requete rest)
