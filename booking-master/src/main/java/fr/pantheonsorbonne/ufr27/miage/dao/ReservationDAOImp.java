@@ -26,6 +26,21 @@ public class ReservationDAOImp implements ReservationDAO {
     @Inject
     private EntityManager entityManager;
 
+    @Override
+    @Transactional
+    public Reservation getReservationById(String reservationId){
+        String jpql = "SELECT r FROM Reservation r WHERE r.reservationNumber = :reservationId";
+
+        TypedQuery<Reservation> query = entityManager.createQuery(jpql, Reservation.class);
+        query.setParameter("reservationId", Integer.parseInt(reservationId));
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
+
+    }
 
         @Override
         @Transactional
@@ -60,5 +75,6 @@ public class ReservationDAOImp implements ReservationDAO {
                 return null;
             }
         }
+
 
 }

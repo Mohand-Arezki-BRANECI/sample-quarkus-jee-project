@@ -2,20 +2,24 @@ package fr.pantheonsorbonne.ufr27.miage.service;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ReservationDAO;
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
+import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import fr.pantheonsorbonne.ufr27.miage.model.Hotel;
 import fr.pantheonsorbonne.ufr27.miage.model.HotelOption;
 import fr.pantheonsorbonne.ufr27.miage.model.Reservation;
 import fr.pantheonsorbonne.ufr27.miage.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.IOException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@RequestScoped
+@ApplicationScoped
 public class ReservationServiceImp implements ReservationService {
 
     @Inject
@@ -26,6 +30,23 @@ public class ReservationServiceImp implements ReservationService {
 
     @Inject
     LoginService loginService;
+
+    @Inject
+    @RestClient
+    BankServiceAmerica bankServiceAmerica;
+
+    @Inject
+    @RestClient
+    BankServiceIreland bankServiceIreland;
+
+    @Inject
+    @RestClient
+    HotelServiceParadiso hotelServiceParadiso;
+
+    @Inject
+    @RestClient
+    HotelServiceCalifornia hotelServiceCalifornia;
+
 
     @Inject
     CamelContext context;
@@ -45,5 +66,32 @@ public class ReservationServiceImp implements ReservationService {
 
         Reservation returnReservation = reservationDAO.save(reservation, reservationUser, options, hotel );
         return  returnReservation;
+    }
+
+    @Override
+    public String sendPaymentToHotel(TransactionDTO transactionDTO) {
+        Reservation reservation = reservationDAO.getReservationById(transactionDTO.getReservationId());
+
+        TransactionDTO hotelPayment = new TransactionDTO();
+        hotelPayment.setFromBankId(1000);
+        hotelPayment.setFromAccountId(2);
+        hotelPayment.setReservationId(String.valueOf(reservation.getReservationNumber()));
+        //this is the gain of booking
+        hotelPayment.setAmount(transactionDTO.getAmount()-100);
+        hotelPayment.setTransactionPurpose("bookingPayment");
+
+        if(reservation.getHotel().getHotelName().equals("Hotel Paradiso")){
+            hotelPayment.setToBankId(999);
+            hotelPayment.setToAccountId(2);
+
+            bankServiceAmerica.createTransaction(hotelPayment);
+            //TODO change Status
+        }else if(reservation.getHotel().getHotelName().equals("Hotel California")){
+            hotelPayment.setToBankId(1000);
+            hotelPayment.setToAccountId(3);
+            bankServiceAmerica.createTransaction(hotelPayment);
+            //TODO change Status
+        }
+        return reservation.getHotel().getHotelName();
     }
 }

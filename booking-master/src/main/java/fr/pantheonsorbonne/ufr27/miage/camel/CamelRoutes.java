@@ -4,6 +4,7 @@ package fr.pantheonsorbonne.ufr27.miage.camel;
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import fr.pantheonsorbonne.ufr27.miage.service.HotelServiceCalifornia;
 import fr.pantheonsorbonne.ufr27.miage.service.HotelServiceParadiso;
+import fr.pantheonsorbonne.ufr27.miage.service.ReservationService;
 import jakarta.inject.Named;
 import org.apache.camel.CamelContext;
 import org.apache.camel.LoggingLevel;
@@ -38,7 +39,12 @@ public class CamelRoutes extends RouteBuilder {
 
         from("sjms2:topic:clientPaymentResponse")
                 .unmarshal().json(TransactionDTO.class)
-                .log(LoggingLevel.INFO,"Booking received the following payment: ${body}");
+                .log(LoggingLevel.INFO,"Booking received the following payment: ${body}")
+                        .bean(ReservationService.class, "sendPaymentToHotel");
+
+        from("sjms2:topic:bookingPaymentResponse")
+                .unmarshal().json(TransactionDTO.class)
+                .log(LoggingLevel.INFO,"Booking payed the following payment: ${body}");
 
 
         from("direct:sendToHotel")
@@ -53,7 +59,7 @@ public class CamelRoutes extends RouteBuilder {
                 .endChoice();
 
         from("direct:handleCreateReservationResponse")
-                .log("${body}");
+                .to("sjms2:topic:hotelReservationResponse");
 
 }
 }

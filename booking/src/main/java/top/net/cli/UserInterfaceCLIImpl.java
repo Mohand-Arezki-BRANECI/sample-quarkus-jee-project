@@ -372,7 +372,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
     }
 
-    public void sendPayment(){
+    public void sendPayment(/*ReservationResponse response */){
         terminal.println("We received the following transaction Request in your name from Booking: SHOW STUFF");
         terminal.println("To authorise the transaction pleas login to your MIAGE bank account!");
 

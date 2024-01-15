@@ -64,7 +64,7 @@ public class CamelRoutes extends RouteBuilder {
 
         from("sjms2:topic:bookingPaymentResponse")
                 .unmarshal().json(TransactionDTO.class)
-                .log(LoggingLevel.INFO,"${body}");
+                .log(LoggingLevel.INFO,"Your Reservation has been payed for. Thanks for using our Service.");
 
         from("sjms2:topic:cancellationPaymentResponse")
                 .unmarshal().json(TransactionDTO.class)
@@ -84,6 +84,12 @@ public class CamelRoutes extends RouteBuilder {
                 .bean(eCommerce, "displayReservationDetails")
                 .bean(eCommerce, "showSuccessMessage(${body" +
                         "})");
+
+
+        from("sjms2:topic:hotelReservationResponse")
+                .log("Reservation has been create. Payment needed: ${body}")
+                .bean(eCommerce, "sendPayment(${body})");
+
 
 
 

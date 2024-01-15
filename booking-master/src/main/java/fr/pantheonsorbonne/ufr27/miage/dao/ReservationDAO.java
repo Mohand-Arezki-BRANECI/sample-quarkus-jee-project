@@ -10,5 +10,6 @@ import java.util.Set;
 
 public interface ReservationDAO {
     public Hotel getHotelbyId(int hotelId);
+    public Reservation getReservationById(String reservationId);
     public Reservation save(ReservationRequestDTO reservationRequest, User reservationUser, Set<HotelOption> options, Hotel hotel);
 }
