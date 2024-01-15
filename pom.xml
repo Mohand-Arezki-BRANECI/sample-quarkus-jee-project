@@ -9,6 +9,7 @@
   <name>project-m1</name>
   <modules>
     <module>booking</module>
+    <module>booking-master</module>
     <module>bank</module>
     <module>bank-2</module>
     <module>ticket-commons</module>
