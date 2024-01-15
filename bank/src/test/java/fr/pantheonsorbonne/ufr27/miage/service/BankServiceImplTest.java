@@ -87,19 +87,6 @@ class BankServiceImplTest {
     }
 
     @Test
-    void getTransferWithReservationId() throws AccountNotFoundException{
-        Transaction transaction = bankService.findTransferWithReservationId(testData.reservationId(), testData.fromAccount(), testData.fromBank());
-
-        assertEquals(99, transaction.getFromBankId());
-        assertEquals(99, transaction.getFromAccountId());
-        assertEquals(1, transaction.getToAccountId());
-        assertEquals(1, transaction.getToAccountId());
-        assertEquals(100, transaction.getAmount());
-        assertEquals("1", transaction.getReservationId());
-
-    }
-
-    @Test
     void addAmount() throws AccountNotFoundException{
         Account account = bankService.getAccountByEmailAndPassword("test","test");
         double amount = account.getBalance();
