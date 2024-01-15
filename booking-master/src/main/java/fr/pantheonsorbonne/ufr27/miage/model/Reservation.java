@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.model;
 
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 import java.util.Date;
 import java.util.Set;
@@ -17,9 +18,12 @@ public class Reservation {
     @ManyToOne
     @JoinColumn(name = "userId")
     private User user;
+
     @ManyToMany
+    @JsonbTransient
     @JoinTable(name="ReservationOptions")
     private Set<HotelOption> options;
+
     public Set<HotelOption> getOptions() {
         return options;
     }
