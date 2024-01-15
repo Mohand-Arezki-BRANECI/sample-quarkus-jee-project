@@ -3,6 +3,14 @@ import jakarta.persistence.*;
 
 import java.util.Set;
 
+
+@NamedQueries({
+        @NamedQuery(
+                name = "findByLocationId",
+                query ="SELECT a FROM Hotel a " +
+                        "WHERE a.hotelLocation.id = :locationId"
+        ),
+})
 @Table(name = "Hotel")
 @Entity
 
@@ -10,20 +18,11 @@ public class Hotel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "hotelId", nullable = false)
-    private Integer id;
-
+    private int id;
     @ManyToOne
     @JoinColumn(name = "locationId")
     private HotelLocation hotelLocation;
-    @ManyToMany
-    @JoinTable(name="HotelOptions")
-    private Set<HotelOption> options;
-    public Set<HotelOption> getOptions() {
-        return options;
-    }
-    public void setOptions(Set<HotelOption> options) {
-        this.options= options;
-    }
+
     @Column(name = "hotelName", nullable = false, length = 45)
     private String hotelName;
 

@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 
@@ -55,33 +56,39 @@ public class CamelRoutes extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        camelContext.setTracing(true);
+        camelContext.setTracing(false);
 
-        from("sjms2:topic:paymentReceived")
-                .log("Transaction has been: ${body}");
+        from("sjms2:topic:clientPaymentResponse")
+                .unmarshal().json(TransactionDTO.class)
+                .log(LoggingLevel.INFO,"${body}");
 
+        from("sjms2:topic:bookingPaymentResponse")
+                .unmarshal().json(TransactionDTO.class)
+                .log(LoggingLevel.INFO,"Your Reservation has been payed for. Thanks for using our Service.");
 
-        from("direct:cli")//
-                .marshal().json()//, "onBookedResponseReceived"
-                .to("sjms2:" + jmsPrefix + "booking?exchangePattern=InOut")//
+        from("sjms2:topic:cancellationPaymentResponse")
+                .unmarshal().json(TransactionDTO.class)
+                .log(LoggingLevel.INFO,"${body}");
+
+        from("direct:bookingFront")
                 .choice()
-                .when(header("success").isEqualTo(false))
-                .setBody(simple("not enough quota for this vendor"))
+                .when(header("loginStatus").isEqualTo("bookingLoginError"))
                 .bean(eCommerce, "showErrorMessage").stop()
-                .otherwise()
-                .unmarshal().json(Booking.class)
-                .bean(BookingResponseHandler)
-                .log("response received ${in.body}")
-                .bean(ticketingService, "fillTicketsWithCustomerInformations")
-                .split(body())
-                .marshal().json(ETicket.class)
-                .to("sjms2:" + jmsPrefix + "ticket?exchangePattern=InOut")
-                .choice()
-                .when(header("success").isEqualTo(false))
-                .bean(eCommerce, "showErrorMessage").stop()
-                .otherwise()
-                .unmarshal().json(TicketEmissionData.class)
-                .bean(ticketingService, "notifyCreatedTicket");
+                .when(header("loginStatus").isEqualTo("bookingLoginSuccess"))
+                .bean(eCommerce, "showSuccessMessage('Welcome to Booking ${body.getFirstName()} ${body.getLastName()}')")
+                .bean(eCommerce, "askForHotelLocation")
+                .bean(eCommerce, "askForDates")
+                .bean(eCommerce, "askForNumberOfGuests")
+                .bean(eCommerce, "askForHotel")
+                .bean(eCommerce, "askForOptions")
+                .bean(eCommerce, "displayReservationDetails")
+                .bean(eCommerce, "showSuccessMessage(${body" +
+                        "})");
+
+
+        from("sjms2:topic:hotelReservationResponse")
+                .log("Reservation has been create. Payment needed: ${body}")
+                .bean(eCommerce, "sendPayment(${body})");
 
 
         from("sjms2:topic:" + jmsPrefix + "cancellation")

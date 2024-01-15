@@ -6,7 +6,14 @@ import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 
 public interface TransactionGateway {
 
-    void sendTransaction(TransactionDTO transaction);
+    String makeTransaction(TransactionDTO transaction);
 
-    public boolean shouldProcess(TransactionDTO transaction);
+    public boolean isSendingBank(TransactionDTO transaction);
+
+    public boolean isReceivingBank(TransactionDTO transaction);
+
+    public boolean isSendingAndReceiving(TransactionDTO transaction);
+
+
+
 }

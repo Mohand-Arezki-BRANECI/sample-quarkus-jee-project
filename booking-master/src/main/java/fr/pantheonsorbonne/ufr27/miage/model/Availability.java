@@ -30,6 +30,9 @@ public class Availability {
     @Column(name = "bedsNumber")
     private Integer bedsNumber;
 
+    @Column(name = "roomPrice")
+    private Double roomPrice;
+
     public Integer getId() {
         return id;
     }
@@ -62,6 +65,13 @@ public class Availability {
     }
     public void setBedsNumber(Integer bedsNumber) {
         this.bedsNumber = bedsNumber;
+    }
+
+    public Double getRoomPrice() {
+        return roomPrice;
+    }
+    public void setRoomPrice(Double roomPrice) {
+        this.roomPrice = roomPrice;
     }
 
 }

@@ -1,7 +1,13 @@
 package fr.pantheonsorbonne.ufr27.miage.model;
+import jakarta.json.bind.annotation.JsonbTransient;
 import jakarta.persistence.*;
 
 import java.util.Set;
+
+@NamedQueries({
+        @NamedQuery(name = "findHotelOptions",
+                query = "SELECT h FROM HotelOption h ")
+})
 
 @Table(name = "HotelOption")
 @Entity
@@ -11,25 +17,40 @@ public class HotelOption {
     @Column(name = "optionId", nullable = false)
     private Integer id;
 
-    @ManyToMany(mappedBy="options")
-    private Set<Hotel> hotels;
-    public Set<Hotel> getHotels() {
-        return hotels;
+    @Column(name = "optionName")
+    private String optionName;
+
+    @Column(name = "optionPrice")
+    private Double optionPrice;
+
+    @ManyToMany(mappedBy = "options")
+    @JsonbTransient
+    private Set<Reservation> reservations;
+
+    @ManyToOne
+    @JoinColumn(name = "hotelId")
+    private Hotel hotel;
+
+
+    public Hotel getHotel() {
+        return hotel;
     }
-    public void setHotels(Set<Hotel> hotels) {
-        this.hotels= hotels;
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
+    }
+    public Double getOptionPrice() {
+        return optionPrice;
+    }
+    public void setOptionPrice(Double optionPrice) {
+        this.optionPrice = optionPrice;
     }
 
-    @ManyToMany(mappedBy="options")
-    private Set<Reservation> reservations;
     public Set<Reservation> getReservations() {
         return reservations;
     }
     public void setReservations(Set<Reservation> reservations) {
         this.reservations= reservations;
     }
-    @Column(name = "optionName")
-    private String optionName;
 
     public String getOptionName() {
         return optionName;
@@ -37,6 +58,7 @@ public class HotelOption {
     public void setOptionName(String optionName) {
         this.optionName = optionName;
     }
+
     public Integer getId() {
         return id;
     }
@@ -44,4 +66,5 @@ public class HotelOption {
     public void setId(Integer id) {
         this.id = id;
     }
+
 }
