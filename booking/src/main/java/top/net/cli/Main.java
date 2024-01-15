@@ -33,26 +33,7 @@ public class Main implements Runnable {
 
         while (true) {
             try {
-
-                // booking-cli
                 eCommerce.askToLogIn();
-
-                /*
-                eCommerce.askForHotelLocation();
-                eCommerce.askForDates();
-                eCommerce.askForNumberOfGuests();
-                eCommerce.askForHotel();
-                eCommerce.askForOptions();
-                eCommerce.displayReservationDetails();
-
-
-
-                // bank
-                eCommerce.sendPayment();
-                eCommerce.cancelReservation();
-
-                 */
-
             } catch (Exception e) {
                 eCommerce.showErrorMessage(e.getMessage());
             }

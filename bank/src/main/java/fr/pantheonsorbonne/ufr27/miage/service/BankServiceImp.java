@@ -89,7 +89,7 @@ public class BankServiceImp implements BankService {
 
         bankDAO.changeAccountBalance(toAccount);
 
-        Transaction transfer= bankDAO.save(transaction);
+        Transaction transfer = bankDAO.save(transaction);
 
         return transfer;
     }

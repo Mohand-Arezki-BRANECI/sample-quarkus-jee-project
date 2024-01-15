@@ -84,35 +84,6 @@ public class CamelRoutes extends RouteBuilder {
                 .bean(eCommerce, "displayReservationDetails")
                 .bean(eCommerce, "showSuccessMessage(${body.toString()})");
 
-
-
-
-        /*
-        from("direct:cli")//
-                .marshal().json()//, "onBookedResponseReceived"
-                .to("sjms2:" + jmsPrefix + "booking?exchangePattern=InOut")//
-                .choice()
-                .when(header("success").isEqualTo(false))
-                .setBody(simple("not enough quota for this vendor"))
-                .bean(eCommerce, "showErrorMessage").stop()
-                .otherwise()
-                .unmarshal().json(Booking.class)
-                .bean(BookingResponseHandler)
-                .log("response received ${in.body}")
-                .bean(ticketingService, "fillTicketsWithCustomerInformations")
-                .split(body())
-                .marshal().json(ETicket.class)
-                .to("sjms2:" + jmsPrefix + "ticket?exchangePattern=InOut")
-                .choice()
-                .when(header("success").isEqualTo(false))
-                .bean(eCommerce, "showErrorMessage").stop()
-                .otherwise()
-                .unmarshal().json(TicketEmissionData.class)
-                .bean(ticketingService, "notifyCreatedTicket");
-
-         */
-
-
         from("sjms2:topic:" + jmsPrefix + "cancellation")
                 .log("cancellation notice ${body} ${headers}")
                 .filter(header("vendorId").isEqualTo(vendorId))
