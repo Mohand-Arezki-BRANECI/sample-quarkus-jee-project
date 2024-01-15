@@ -8,18 +8,11 @@
   <packaging>pom</packaging>
   <name>project-m1</name>
   <modules>
-<<<<<<< HEAD
     <module>booking</module>
     <module>bank</module>
     <module>bank-2</module>
-    <module>ticket-master</module>
-    <module>ticket-vendor</module>
-    <module>ticket-commons</module>
-    <module>booking-master</module>
-=======
     <module>ticket-commons</module>
     <module>hotel_california</module>
->>>>>>> dev
   </modules>
   <dependencyManagement>
     <dependencies>

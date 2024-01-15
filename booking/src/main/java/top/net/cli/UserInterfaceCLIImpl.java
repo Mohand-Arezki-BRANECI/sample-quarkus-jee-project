@@ -78,7 +78,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
 
     private BookingUserDTO bookingUser;
-    private ReservationRequestDTO reservationRequest;
+    private BookingReservationDTO reservationRequest;
     private String startDateString;
     private String endDateString;
     private int nbGuests;
@@ -224,7 +224,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     }
 
     public void displayReservationDetails() {
-        this.reservationRequest = new ReservationRequestDTO();
+        this.reservationRequest = new BookingReservationDTO();
         reservationRequest.setUser(bookingUser);
         reservationRequest.setFrom(LocalDate.parse(startDateString));
         reservationRequest.setTo(LocalDate.parse(endDateString));

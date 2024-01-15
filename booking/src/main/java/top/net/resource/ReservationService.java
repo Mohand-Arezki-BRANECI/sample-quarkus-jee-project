@@ -1,5 +1,6 @@
 package top.net.resource;
 
+import fr.pantheonsorbonne.ufr27.miage.dto.BookingReservationDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import jakarta.ws.rs.Consumes;
@@ -17,5 +18,5 @@ public interface ReservationService {
     @Path("createReservation")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createReservation(@QueryParam("hotelId") int hotelId, ReservationRequestDTO reservation);
+    public Response createReservation(@QueryParam("hotelId") int hotelId, BookingReservationDTO reservation);
 }

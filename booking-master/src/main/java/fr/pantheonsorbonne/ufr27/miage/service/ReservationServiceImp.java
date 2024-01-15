@@ -1,8 +1,10 @@
 package fr.pantheonsorbonne.ufr27.miage.service;
 
 import fr.pantheonsorbonne.ufr27.miage.dao.ReservationDAO;
+import fr.pantheonsorbonne.ufr27.miage.dto.BookingReservationDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
+import fr.pantheonsorbonne.ufr27.miage.dto.UserDTO;
 import fr.pantheonsorbonne.ufr27.miage.model.Hotel;
 import fr.pantheonsorbonne.ufr27.miage.model.HotelOption;
 import fr.pantheonsorbonne.ufr27.miage.model.Reservation;
@@ -16,6 +18,7 @@ import org.apache.camel.ProducerTemplate;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,15 +54,29 @@ public class ReservationServiceImp implements ReservationService {
     @Inject
     CamelContext context;
     @Override
-    public Reservation addReservation(ReservationRequestDTO reservation, int hotelId) {
+    public Reservation addReservation(BookingReservationDTO reservation, int hotelId) {
         User reservationUser = loginService.getByEmail(reservation.getUser().getEmail());
 
         Set<HotelOption> options = optionService.getHotelOptionsModel(hotelId).stream().filter(option -> reservation.getOptionsNames().contains(option.getOptionName())).collect(Collectors.toSet());
 
         Hotel hotel = reservationDAO.getHotelbyId(hotelId);
 
+        UserDTO hotelUser = new UserDTO();
+        hotelUser.setEmailAddress(reservation.getUser().getEmail());
+        hotelUser.setName(reservation.getUser().getFirstName());
+        hotelUser.setLastName(reservation.getUser().getLastName());
+        hotelUser.setPhoneNumber(null);
+
+        ReservationRequestDTO hotelRequest = new ReservationRequestDTO();
+        hotelRequest.setUser(hotelUser);
+        hotelRequest.setFrom(reservation.getFrom());
+        hotelRequest.setTo(reservation.getTo());
+        hotelRequest.setGuests(reservation.getGuests());
+        hotelRequest.setOptionsNames(reservation.getOptionsNames());
+
+
         try (ProducerTemplate producer = context.createProducerTemplate()) {
-            producer.sendBodyAndHeader("direct:sendToHotel", reservation, "toWhichHotel", hotel.getHotelName());
+            producer.sendBodyAndHeader("direct:sendToHotel", hotelRequest, "toWhichHotel", hotel.getHotelName());
         } catch (IOException e) {
             e.printStackTrace();
         }

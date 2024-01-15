@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.dao;
 
+import fr.pantheonsorbonne.ufr27.miage.dto.BookingReservationDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
 import fr.pantheonsorbonne.ufr27.miage.model.Hotel;
@@ -44,7 +45,7 @@ public class ReservationDAOImp implements ReservationDAO {
 
         @Override
         @Transactional
-        public Reservation save(ReservationRequestDTO reservation, User reservationUser, Set<HotelOption> options, Hotel hotel){
+        public Reservation save(BookingReservationDTO reservation, User reservationUser, Set<HotelOption> options, Hotel hotel){
             Reservation newReservation = new Reservation();
             newReservation.setHotel(hotel);
             newReservation.setUser(reservationUser);

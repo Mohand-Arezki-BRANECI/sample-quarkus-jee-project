@@ -1,5 +1,6 @@
 package fr.pantheonsorbonne.ufr27.miage.resources;
 
+import fr.pantheonsorbonne.ufr27.miage.dto.BookingReservationDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
 import fr.pantheonsorbonne.ufr27.miage.model.Reservation;
 import fr.pantheonsorbonne.ufr27.miage.service.ReservationService;
@@ -22,12 +23,9 @@ public class ReservationRessource {
     @Path("createReservation")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response createReservation(@QueryParam("hotelId") int hotelId, ReservationRequestDTO reservation){
+    public Response createReservation(@QueryParam("hotelId") int hotelId, BookingReservationDTO reservation){
 
         Reservation newReservation = service.addReservation(reservation, hotelId);
-
-        // TODO: send to hotel to make reservation
-        // String responseMessage = transactionGateway.makeTransaction(transaction);
 
         return Response.status(Response.Status.OK)
                 .entity(newReservation)
