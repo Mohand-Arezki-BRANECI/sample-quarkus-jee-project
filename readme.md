@@ -25,14 +25,10 @@ En cas d'annulation de réservation, L'utilisateur fais une demande d'annulation
 
 ## Exigences fonctionnelles
 
-* le systeme (Booking) NE DOIT proposer que les chambres d'hotel disponible et qui satisfait les criteres de recherche de l'utilisateur.
 * le systeme DOIT pouvoir effectuer des opérations de reservation.
-* le systeme DOIT pouvoir informé l'utilisateur de la confirmation de sa réservation par mail
 * le systeme DOIT permettre à l'utilisateur d'annuler sa réservation.
 * le systeme DOIT informer l'hotel en cas d'annulation de réservation.
-* le systeme DOIT informer l'utilisateur de l'annulation de la reservation par mail
 * enrichir le prix envoyer par lhotel (benef)
-* une fois qu'un utilisateur a choisie une un hotel (les chambres de ce derniers seront indisponible pour une durée aux autres utilisateurs)
 
 ## Exigences non fonctionnelles
 
