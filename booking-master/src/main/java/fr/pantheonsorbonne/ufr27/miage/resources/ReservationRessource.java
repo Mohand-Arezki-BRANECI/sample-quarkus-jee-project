@@ -2,7 +2,6 @@ package fr.pantheonsorbonne.ufr27.miage.resources;
 
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
 import fr.pantheonsorbonne.ufr27.miage.model.Reservation;
-import fr.pantheonsorbonne.ufr27.miage.service.HotelService;
 import fr.pantheonsorbonne.ufr27.miage.service.ReservationService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;

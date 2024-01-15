@@ -82,9 +82,10 @@ public class CamelRoutes extends RouteBuilder {
                 .bean(eCommerce, "askForHotel")
                 .bean(eCommerce, "askForOptions")
                 .bean(eCommerce, "displayReservationDetails")
-                .bean(eCommerce, "showSuccessMessage(${body})")
-                .bean(eCommerce, "sendPayment")
-                .bean(eCommerce,"cancelReservation");
+                .bean(eCommerce, "showSuccessMessage(${body" +
+                        "})");
+
+
 
 
         /*
