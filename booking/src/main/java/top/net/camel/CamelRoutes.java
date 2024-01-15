@@ -58,17 +58,8 @@ public class CamelRoutes extends RouteBuilder {
     public void configure() throws Exception {
         camelContext.setTracing(false);
 
-        from("sjms2:topic:clientPaymentResponse")
-                .unmarshal().json(TransactionDTO.class)
-                .log(LoggingLevel.INFO,"${body}");
 
-        from("sjms2:topic:bookingPaymentResponse")
-                .unmarshal().json(TransactionDTO.class)
-                .log(LoggingLevel.INFO,"Your Reservation has been payed for. Thanks for using our Service.");
 
-        from("sjms2:topic:cancellationPaymentResponse")
-                .unmarshal().json(TransactionDTO.class)
-                .log(LoggingLevel.INFO,"${body}");
 
         from("direct:bookingFront")
                 .choice()
@@ -81,37 +72,21 @@ public class CamelRoutes extends RouteBuilder {
                 .bean(eCommerce, "askForNumberOfGuests")
                 .bean(eCommerce, "askForHotel")
                 .bean(eCommerce, "askForOptions")
-                .bean(eCommerce, "displayReservationDetails")
-                .bean(eCommerce, "showSuccessMessage(${body" +
-                        "})");
-
+                .bean(eCommerce, "displayReservationDetails");
 
         from("sjms2:topic:hotelReservationResponse")
-                .log("Reservation has been create. Payment needed: ${body}")
-                .bean(eCommerce, "sendPayment(${body})");
+                .unmarshal().json(ReservationResponseDTO.class)
+                .bean(eCommerce, "showSuccessMessage(${body.toString()})")
+                .bean(eCommerce, "sendPayment");
 
+        from("sjms2:topic:clientPaymentResponse")
+                .bean(eCommerce,"showSuccessMessage('Your Reservation has been payed for and is reserved.')")
+                .end();
 
-        from("sjms2:topic:" + jmsPrefix + "cancellation")
-                .log("cancellation notice ${body} ${headers}")
-                .filter(header("vendorId").isEqualTo(vendorId))
-
-                .unmarshal().json(CancelationNotice.class)
-                .process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-
-                        CancelationNotice notice = exchange.getMessage().getMandatoryBody(CancelationNotice.class);
-                        exchange.getMessage().setHeaders(new HashMap<>());
-                        exchange.getMessage().setHeader("to", notice.getEmail());
-                        exchange.getMessage().setHeader("from", smtpFrom);
-                        exchange.getMessage().setHeader("contentType", "text/html");
-                        exchange.getMessage().setHeader("subject", "cancellation notice for venue");
-                        exchange.getMessage().setBody("Dear Customer,\n\n Venue for your ticket " + notice.getTicketId() + " has been cancelled.\n\n Contact vendor for refund");
-                    }
-                })
-                .log("cancellation notice ${body} ${headers}")
-                .to("smtps:" + smtpHost + ":" + smtpPort + "?username=" + smtpUser + "&password=" + smtpPassword + "&contentType=")
-                .bean(eCommerce, "showErrorMessage");
+        from("sjms2:topic:bookingPaymentResponse")
+                .unmarshal().json(TransactionDTO.class)
+                .bean(eCommerce,"showSuccessMessage('All done. The hotel received your payment. THanks for using our service. )")
+                .end();
 
 
     }

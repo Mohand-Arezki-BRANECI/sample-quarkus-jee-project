@@ -37,8 +37,8 @@ public class ReservationDAOImpl implements ReservationDAO{
     public Reservation makeReservation(ReservationRequestDTO request) throws NoAvailableRoomException {
         //check if the user exist
         User user = null;
-        boolean doesUserExist = userDAO.doesUserExist(request.getUser());
-        if(doesUserExist == false){
+        user = userDAO.doesUserExist(request.getUser());
+        if(user == null){
             user = userDAO.createUser(request.getUser());
         }
 
@@ -63,7 +63,9 @@ public class ReservationDAOImpl implements ReservationDAO{
         }
 
         Reservation reservation = new Reservation(request.getGuests(), user, room, from, to, totalPrice, optionsSet, StatusEnum.PENDING, request.getBookingReservationId());
-        return entityManager.merge(reservation);
+        entityManager.persist(reservation);
+
+        return reservation;
     }
     @Transactional
     @Override
@@ -74,14 +76,14 @@ public class ReservationDAOImpl implements ReservationDAO{
             res = entityManager.createQuery("select res from Reservation res where bookingReservationId = :reservationNumber", Reservation.class).setParameter("reservationNumber", cancelReservation).getSingleResult();
             if (res != null){
                 entityManager.createQuery("delete  from Reservation r where bookingReservationId = :reservationNumber").setParameter("reservationNumber", cancelReservation).executeUpdate();
-                return new UpdateReservationDTO(cancelReservation, "Reservation Canceled successfully");
+                return new UpdateReservationDTO(cancelReservation, "CANCELLED");
 
             }
         }
         catch (NoResultException noResultException){
             throw new NoAvailableReservationException();
         }
-    return new UpdateReservationDTO(cancelReservation, "Reservation Canceled failed");
+    return new UpdateReservationDTO(cancelReservation, "FAILED");
     }
     @Transactional
     @Override
@@ -95,19 +97,19 @@ public class ReservationDAOImpl implements ReservationDAO{
                         entityManager.createQuery("update Reservation r set r.status =:reservationStatus where r.bookingReservationId = :reservationNumber")
                                 .setParameter("reservationStatus", status)
                                 .setParameter("reservationNumber", bookingReservationId).executeUpdate();
-                        return new UpdateReservationDTO(bookingReservationId, "Reservation Confirmed successfully");
+                        return new UpdateReservationDTO(bookingReservationId, "CONFIRMED");
 
                     }
                 }catch (NoResultException e){
                     throw  new NoAvailableReservationException();
                 }
 
-                    return new UpdateReservationDTO(bookingReservationId, "Reservation Confirmed successfully");
+                    return new UpdateReservationDTO(bookingReservationId, "CONFIRMED");
             } else if (status == StatusEnum.CANCELED) {
                 return cancelReservation(bookingReservationId);
 
             }
-        return new UpdateReservationDTO(bookingReservationId, "Reservation modification failed");
+        return new UpdateReservationDTO(bookingReservationId, "FAILED");
 
     }
 

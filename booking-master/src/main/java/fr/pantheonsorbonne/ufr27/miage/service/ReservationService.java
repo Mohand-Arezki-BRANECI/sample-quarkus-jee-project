@@ -12,4 +12,6 @@ public interface ReservationService {
 
     String sendPaymentToHotel(TransactionDTO transactionDTO);
 
+    void upateReservationStatus(TransactionDTO transactionDTO);
+
 }

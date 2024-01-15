@@ -1,6 +1,7 @@
 package top.net.cli;
 
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
+import fr.pantheonsorbonne.ufr27.miage.dto.ReservationResponseDTO;
 import org.beryx.textio.TextIO;
 
 import java.text.ParseException;
@@ -20,7 +21,7 @@ public interface UserInterfaceCLI extends BiConsumer<TextIO, RunnerData>, UserIn
 
     void displayReservationDetails();
     // bank
-    void sendPayment();
+    void sendPayment(ReservationResponseDTO response);
 
     void cancelReservation();
 }

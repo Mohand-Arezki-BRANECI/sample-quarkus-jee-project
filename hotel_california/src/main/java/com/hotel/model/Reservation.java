@@ -27,7 +27,7 @@ public  class Reservation {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "room_id", referencedColumnName = "id", unique = false)
     private Room room;
 
@@ -45,6 +45,7 @@ public  class Reservation {
     @Enumerated(EnumType.STRING)
     private StatusEnum status;
 
+    @Column(name = "reservationNumber")
     private String bookingReservationId;
 
     public Reservation(Integer nbrGuest, User user, Room room, LocalDate startDate, LocalDate endDate, Double totalPrice, Set<ReservationOptions> options, StatusEnum status, String bookingReservationId) {

@@ -24,13 +24,6 @@ public class Reservation {
     @JoinTable(name="ReservationOptions")
     private Set<HotelOption> options;
 
-    public Set<HotelOption> getOptions() {
-        return options;
-    }
-    public void setOptions(Set<HotelOption> options) {
-        this.options= options;
-    }
-
     @Column(name = "reservationNumber", nullable = false)
     private Integer reservationNumber ;
     @Column(name = "status", nullable = false)
@@ -43,6 +36,13 @@ public class Reservation {
     private Integer bedsNumber;
     @Column(name = "bookingDate")
     private Date bookingDate;
+
+    public Set<HotelOption> getOptions() {
+        return options;
+    }
+    public void setOptions(Set<HotelOption> options) {
+        this.options= options;
+    }
     public Integer getId() {
         return id;
     }

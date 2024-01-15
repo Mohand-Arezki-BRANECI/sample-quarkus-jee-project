@@ -20,6 +20,7 @@ public class UpdateReservationDTO {
         this.reservationStatus = reservationStatus;
     }
 
+    public UpdateReservationDTO(){};
     public UpdateReservationDTO(String bookingReservationId, String reservationStatus) {
         this.bookingReservationId = bookingReservationId;
         this.reservationStatus = reservationStatus;

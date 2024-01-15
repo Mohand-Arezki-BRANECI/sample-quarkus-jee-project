@@ -9,6 +9,8 @@ public class ReservationResponseDTO {
     private String hotelName;
     private String bookingReservationId;
 
+    public ReservationResponseDTO(){};
+
     public ReservationResponseDTO(Integer reservationId, boolean success, double totalPrice, String hotelName, String bookingReservationId) {
         this.reservationId = reservationId;
         this.success = success;
@@ -54,5 +56,16 @@ public class ReservationResponseDTO {
 
     public void setBookingReservationId(String bookingReservationId) {
         this.bookingReservationId = bookingReservationId;
+    }
+
+    @Override
+    public String toString() {
+        return "ReservationResponseDTO{" +
+                "reservationId=" + reservationId +
+                ", success=" + success +
+                ", totalPrice=" + totalPrice +
+                ", hotelName='" + hotelName + '\'' +
+                ", bookingReservationId='" + bookingReservationId + '\'' +
+                '}';
     }
 }

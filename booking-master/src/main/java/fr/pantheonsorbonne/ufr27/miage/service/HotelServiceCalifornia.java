@@ -1,6 +1,7 @@
 package fr.pantheonsorbonne.ufr27.miage.service;
 
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
+import fr.pantheonsorbonne.ufr27.miage.dto.UpdateReservationDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
@@ -17,17 +18,13 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 public interface HotelServiceCalifornia {
 
 
-    @Path("makeReservation")
+    @Path("make_reservation")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response makeReservation(ReservationRequestDTO reservationRequestDTO);
+    public Response make_reservation(ReservationRequestDTO reservationRequestDTO);
 
-
-    // TODO
-    @Path("checkRoomAvailability")
-    @GET
-    public Integer checkRoomAvailability(
-                                    @QueryParam("startDate") String startDate,
-                                    @QueryParam("endDate") String endDates,
-                                    @QueryParam("nbrBeds") Integer nbrBeds);
+    @Path("update_reservation")
+    @PUT
+    public UpdateReservationDTO update_reservation(@QueryParam("reservationStatus") String reservationStatus,
+                                                   @QueryParam("reservationNumber") String reservationNumber);
 }

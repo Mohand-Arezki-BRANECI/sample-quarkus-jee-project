@@ -14,15 +14,15 @@ public class UserDAOImpl implements UserDAO{
     EntityManager entityManager;
 
     @Override
-    public boolean doesUserExist(UserDTO userDTO) {
+    public User doesUserExist(UserDTO userDTO) {
        try{
            User user =  entityManager.createQuery("SELECT u from User u where email = :userEmail ", User.class).setParameter("userEmail", userDTO.getEmailAddress()).getSingleResult();
            if(Objects.isNull(user)){
-               return false;
+               return null;
            }
-           return true;
+           return user;
        }catch (Exception e){
-           return  false;
+           return  null;
        }
     }
 

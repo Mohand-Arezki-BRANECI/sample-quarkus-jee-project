@@ -16,3 +16,8 @@ REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`,`ro
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`,`roomPrice`) VALUES (2,2,'2024-01-12',6,67);
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`,`roomPrice`) VALUES (2,2,'2024-01-13',3,123);
 REPLACE INTO `Availability` (`hotelId`,`numberFreeRooms`,`date`,`bedsNumber`,`roomPrice`) VALUES (2,2,'2024-01-14',2,89);
+
+
+REPLACE INTO `Reservation` (`idReservation`, `hotelId`, `userId`, `reservationNumber`, `status`, `startDate`, `endDate`, `bedsNumber`, `bookingDate`)
+VALUES (1,1,1,587152403,PENDING,2024-12-12 00:00:00.000000,2024-12-13 00:00:00.000000,2,null);
+

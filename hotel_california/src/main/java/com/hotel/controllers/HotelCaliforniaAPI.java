@@ -44,7 +44,8 @@ public class HotelCaliforniaAPI {
     public ReservationResponseDTO makeReservation(ReservationRequestDTO reservation) {
         try {
            Reservation reservationS =  reservationService.makeReservation(reservation);
-           return new ReservationResponseDTO(reservationS.getId(), true, reservationS.getTotalPrice(), hotelName, reservationS.getBookingReservationId());
+           ReservationResponseDTO response =  new ReservationResponseDTO(reservationS.getId(), true, reservationS.getTotalPrice(), hotelName, reservationS.getBookingReservationId());
+           return response;
         } catch (NoAvailableRoomException e) {
             return new ReservationResponseDTO(-1, false, 0.0, hotelName, "Reservation failed");
         }

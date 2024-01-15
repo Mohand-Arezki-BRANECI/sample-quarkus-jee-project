@@ -3,6 +3,7 @@ package fr.pantheonsorbonne.ufr27.miage.dao;
 import fr.pantheonsorbonne.ufr27.miage.dto.BookingReservationDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
 import fr.pantheonsorbonne.ufr27.miage.dto.TransactionDTO;
+import fr.pantheonsorbonne.ufr27.miage.dto.UpdateReservationDTO;
 import fr.pantheonsorbonne.ufr27.miage.model.Hotel;
 import fr.pantheonsorbonne.ufr27.miage.model.HotelOption;
 import fr.pantheonsorbonne.ufr27.miage.model.Reservation;
@@ -43,7 +44,20 @@ public class ReservationDAOImp implements ReservationDAO {
 
     }
 
-        @Override
+    @Override
+    @Transactional
+    public void changeStatus(String reservationID, String status) {
+        Reservation res = null;
+        res = entityManager.createQuery("select res from Reservation res where res.reservationNumber = :reservationNumber", Reservation.class).setParameter("reservationNumber", reservationID).getSingleResult();
+        if (res != null) {
+            entityManager.createQuery("update Reservation r set r.status =:reservationStatus where r.reservationNumber = :reservationNumber")
+                    .setParameter("reservationStatus", status)
+                    .setParameter("reservationNumber", reservationID).executeUpdate();
+        }
+    }
+
+
+    @Override
         @Transactional
         public Reservation save(BookingReservationDTO reservation, User reservationUser, Set<HotelOption> options, Hotel hotel){
             Reservation newReservation = new Reservation();

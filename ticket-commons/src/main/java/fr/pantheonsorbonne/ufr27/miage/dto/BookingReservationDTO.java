@@ -73,4 +73,15 @@ public class BookingReservationDTO {
     public Integer getGuests() {
         return guests;
     }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "user=" + user.getFirstName() + " " + user.getLastName() +
+                ", startDate=" + from +
+                ", endDate=" + to +
+                ", optionsNames=" + optionsNames +
+                ", guests=" + guests +
+                '}';
+    }
 }

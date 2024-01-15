@@ -185,8 +185,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
             if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
                this.bookingUser = loginResponse.readEntity(BookingUserDTO.class);
-                terminal.println(this.bookingUser.getFirstName());
-                terminal.println(this.bookingUser.getEmail());
                 try (ProducerTemplate producer = context.createProducerTemplate()) {
                     producer.sendBodyAndHeader("direct:bookingFront", bookingUser, "loginStatus", "bookingLoginSuccess");
                 } catch (IOException e) {
@@ -219,7 +217,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     private void processSelectedOptions() {
         terminal.println("Selected Options:");
         for (HotelOption option : this.selectedOptions) {
-            terminal.println( "Name: " + option.getName() + "d, Price: " + option.getOptionPrice());
+            showSuccessMessage( "Name: " + option.getName());
         }
     }
 
@@ -234,7 +232,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Your reservation details are:");
         terminal.println(this.reservationRequest.toString());
 
-        String confirmation = textIO.newStringInputReader().read("Would you like to confirm the payment? [Y/N]");
+        String confirmation = textIO.newStringInputReader().read("Would you like to confirm your selection? [Y/N]");
         if(confirmation.equals("Y") || confirmation.equals("y")){
             try {
                 reservationService.createReservation(this.selectedHotelId, reservationRequest);
@@ -242,6 +240,8 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
                 String respStr = e.getResponse().readEntity(String.class);
                 this.showErrorMessage(respStr);
             }
+        }else {
+            showErrorMessage("Until we meet again!");
         }
 
         /*
@@ -260,10 +260,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         double totalPrice = optionsPrice + selectedAvailability.getPrice();
         terminal.println("Final price:   "+ totalPrice);
          */
-
-
-
-
     }
 
     public void askForNumberOfGuests() {
@@ -372,9 +368,15 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
     }
 
-    public void sendPayment(/*ReservationResponse response */){
-        terminal.println("We received the following transaction Request in your name from Booking: SHOW STUFF");
-        terminal.println("To authorise the transaction pleas login to your MIAGE bank account!");
+    public void sendPayment(ReservationResponseDTO response){
+
+        double bookingPrice = response.getTotalPrice() + 100;
+        String bookingReservation = response.getBookingReservationId();
+
+        terminal.println("The Hotel has added you reservation with status PENDING");
+
+        terminal.println("To finalize the reservation please login to your MIAGE bank account and pay your incoive of: " + bookingPrice);
+
 
         String bankNr  = textIO.newStringInputReader().read("Which Bank do you want to login to (Press the number)? \n 1) Bank of America \n 2) Bank of Ireland ");
 
@@ -398,18 +400,17 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
                 // Extract the serialized AccountDTO data from the response
                 AccountDTO accountDTO = loginResponse.readEntity(AccountDTO.class);
 
-                // Now 'accountDTO' contains the deserialized data
-                // You can use the data as needed, for example, display it
-                this.showSuccessMessage("Login successful. Welcome  " + accountDTO.getOwnerFirstName() + " " + accountDTO.getOwnerLastName());
+
+                showSuccessMessage("Login successful. Welcome  " + accountDTO.getOwnerFirstName() + " " + accountDTO.getOwnerLastName());
 
                 String confirmation = textIO.newStringInputReader().read("Would you like to confirm the payment? [Y/N]");
                 if(confirmation.equals("Y") || confirmation.equals("y")){
-                    //TODO:
-                    TransactionDTO transaction = new TransactionDTO(email,password,2,1000, accountDTO.getAccountId(), accountDTO.getBankId(), 100, "clientPayment", "1");
+
+                    TransactionDTO transaction = new TransactionDTO(email,password,2,1000, accountDTO.getAccountId(), accountDTO.getBankId(), bookingPrice, "clientPayment", bookingReservation);
                     terminal.println(transaction.getReservationId());
                     Response transactionResponse = bankServiceToUse.createTransaction(transaction);
 
-                    this.showSuccessMessage(transactionResponse.readEntity(String.class));
+                    showSuccessMessage(transactionResponse.readEntity(String.class));
                 }
             } else {
                 // Handle the case where the login failed

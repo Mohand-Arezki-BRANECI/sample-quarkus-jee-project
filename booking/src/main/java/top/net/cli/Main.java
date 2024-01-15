@@ -30,15 +30,7 @@ public class Main implements Runnable {
 
         eCommerce.accept(textIO, new RunnerData(""));
 
-
-        while (true) {
-            try {
-                eCommerce.askToLogIn();
-            } catch (Exception e) {
-                eCommerce.showErrorMessage(e.getMessage());
-            }
-        }
-
+        eCommerce.askToLogIn();
 
     }
 

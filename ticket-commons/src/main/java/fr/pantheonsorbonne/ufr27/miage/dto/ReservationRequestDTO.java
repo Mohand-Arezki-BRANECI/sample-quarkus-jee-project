@@ -74,4 +74,16 @@ public class ReservationRequestDTO{
     public Integer getGuests() {
         return guests;
     }
+
+    @Override
+    public String toString() {
+        return "ReservationRequestDTO{" +
+                "user=" + user +
+                ", from=" + from +
+                ", to=" + to +
+                ", optionsNames=" + optionsNames +
+                ", bookingReservationId='" + bookingReservationId + '\'' +
+                ", guests=" + guests +
+                '}';
+    }
 }
