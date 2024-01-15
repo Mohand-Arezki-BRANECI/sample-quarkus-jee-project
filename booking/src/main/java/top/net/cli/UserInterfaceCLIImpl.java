@@ -22,6 +22,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +59,10 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     @RestClient
     BankServiceIreland bankServiceIreland;
 
+    @Inject
+    @RestClient
+    ReservationService reservationService;
+
 
 
     @Inject
@@ -71,8 +76,9 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     TextTerminal<?> terminal;
     TextIO textIO;
 
-    @ConfigProperty(name = "fr.pantheonsorbonne.ufr27.miage.vendorId")
-    Integer vendorId;
+
+    private BookingUserDTO bookingUser;
+    private ReservationRequestDTO reservationRequest;
     private String startDateString;
     private String endDateString;
     private int nbGuests;
@@ -82,13 +88,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     private String selectedHotelName;
     private Availability selectedAvailability;
     private List<HotelOption> selectedOptions = new ArrayList<>();;
-    public void displayAvailableGigsToCli() {
-        terminal.println("VendorId=" + vendorId);
-        for (Gig gig : vendorService.getGigs(vendorId)) {
-            terminal.println("[" + gig.getVenueId() + "] " + gig.getArtistName() + " " + gig.getDate().format(DateTimeFormatter.ISO_DATE) + " " + gig.getLocation());
-        }
-    }
-
 
     public void askForHotelLocation() {
         terminal.println("Please select from the location we provide here");
@@ -96,7 +95,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         Collection<HotelLocation> hotelLocations = locationService.getHotelLocations();
 
         for (HotelLocation hotelLocation : hotelLocations) {
-            terminal.println("[" + hotelLocation.getLocationName() + "] " + hotelLocation.getLongitude() + " " + hotelLocation.getLatitude());
+            terminal.println("[" + hotelLocation.getLocationName() + "]");
         }
 
         String selectedHotelLocation = textIO.newStringInputReader().withPossibleValues(hotelLocations.stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
@@ -154,7 +153,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Available options for the selected hotel:");
 
         for (HotelOption hotelOption : hotelOptions) {
-            terminal.println(  hotelOption.getName());
+            terminal.println( hotelOption.getName());
         }
 
 
@@ -178,7 +177,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         // Process the selected options as needed
         processSelectedOptions();
     }
-
     public void askToLogIn() {
         terminal.println("Please login with your credentials:");
         String emailInput = textIO.newStringInputReader().read("Email:");
@@ -186,9 +184,11 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         try {
             Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
             if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
-                UserDTO successMessage = loginResponse.readEntity(UserDTO.class);
+               this.bookingUser = loginResponse.readEntity(BookingUserDTO.class);
+                terminal.println(this.bookingUser.getFirstName());
+                terminal.println(this.bookingUser.getEmail());
                 try (ProducerTemplate producer = context.createProducerTemplate()) {
-                    producer.sendBodyAndHeader("direct:bookingFront", successMessage, "loginStatus", "bookingLoginSuccess");
+                    producer.sendBodyAndHeader("direct:bookingFront", bookingUser, "loginStatus", "bookingLoginSuccess");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -218,13 +218,33 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     private void processSelectedOptions() {
         terminal.println("Selected Options:");
-
         for (HotelOption option : this.selectedOptions) {
-            terminal.println( "Name: " + option.getName() + ", Price: " + option.getOptionPrice());
+            terminal.println( "Name: " + option.getName() + "d, Price: " + option.getOptionPrice());
         }
     }
 
     public void displayReservationDetails() {
+        this.reservationRequest = new ReservationRequestDTO();
+        reservationRequest.setUser(bookingUser);
+        reservationRequest.setFrom(LocalDate.parse(startDateString));
+        reservationRequest.setTo(LocalDate.parse(endDateString));
+        reservationRequest.setGuests(nbGuests);
+        reservationRequest.setOptionsNames(selectedOptions.stream().map(HotelOption::getName).collect(Collectors.toList()));
+
+        terminal.println("Your reservation details are:");
+        terminal.println(this.reservationRequest.toString());
+
+        String confirmation = textIO.newStringInputReader().read("Would you like to confirm the payment? [Y/N]");
+        if(confirmation.equals("Y") || confirmation.equals("y")){
+            try {
+                reservationService.createReservation(this.selectedHotelId, reservationRequest);
+            }catch (WebApplicationException e) {
+                String respStr = e.getResponse().readEntity(String.class);
+                this.showErrorMessage(respStr);
+            }
+        }
+
+        /*
         double optionsPrice = 0.0;
         terminal.println("Your reservation details are:");
         terminal.println("Hotel name: " + selectedHotelName);
@@ -239,6 +259,8 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Options price " + optionsPrice);
         double totalPrice = optionsPrice + selectedAvailability.getPrice();
         terminal.println("Final price:   "+ totalPrice);
+         */
+
 
 
 
@@ -294,16 +316,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
     }
 
-
-    public Booking getBookingFromOperator(){
-        terminal.println("Which Gig to book?");
-
-        Integer venueId = textIO.newIntInputReader().withPossibleValues(vendorService.getGigs(vendorId).stream().map(g -> g.getVenueId()).collect(Collectors.toList())).read("Which venue?");
-        Integer sittingCount = textIO.newIntInputReader().read("How many seats?");
-        Integer standingCount = textIO.newIntInputReader().read("How many pit tickets?");
-
-        return new Booking(vendorId,venueId,standingCount,sittingCount);
-    }
 
     public void cancelReservation(){
         String reservationId = textIO.newStringInputReader().read("Which of your reservations would you like to cancel?");

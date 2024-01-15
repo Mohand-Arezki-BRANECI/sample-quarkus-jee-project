@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReservationRequestDTO{
-    private UserDTO user;
+    private BookingUserDTO user;
     private LocalDate from, to;
     private List<String> optionsNames = new ArrayList<>();
 
@@ -16,7 +16,7 @@ public class ReservationRequestDTO{
     public ReservationRequestDTO() {
     }
 
-    public ReservationRequestDTO(UserDTO user, LocalDate from, LocalDate to, List<String> optionsNames, String bookingReservationId, Integer guests) {
+    public ReservationRequestDTO(BookingUserDTO user, LocalDate from, LocalDate to, List<String> optionsNames, String bookingReservationId, Integer guests) {
         this.user = user;
         this.from = from;
         this.to = to;
@@ -25,7 +25,7 @@ public class ReservationRequestDTO{
         this.guests = guests;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(BookingUserDTO user) {
         this.user = user;
     }
 
@@ -49,7 +49,7 @@ public class ReservationRequestDTO{
         this.guests = guests;
     }
 
-    public UserDTO getUser() {
+    public BookingUserDTO getUser() {
         return user;
     }
 
@@ -71,5 +71,16 @@ public class ReservationRequestDTO{
 
     public Integer getGuests() {
         return guests;
+    }
+
+    @Override
+    public String toString() {
+        return "Reservation{" +
+                "user=" + user.getFirstName() + " " + user.getLastName() + " " + user.getEmail() +
+                ", from=" + from +
+                ", to=" + to +
+                ", optionsNames=" + optionsNames +
+                ", guests=" + guests +
+                '}';
     }
 }

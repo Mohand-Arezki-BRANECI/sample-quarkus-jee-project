@@ -1,48 +1,67 @@
 package fr.pantheonsorbonne.ufr27.miage.dto;
 
-public class UserDTO {
-    String firstName, lastName, emailAddress, phoneNumber;
+public class BookingUserDTO {
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String password;
+
+    // Constructors
+    public BookingUserDTO() {
+    }
+
+    public BookingUserDTO(String firstName, String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
+
+    // Getter and Setter methods
+    public String getFirstName() {
+        return firstName;
+    }
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getFirstName() {
-        return firstName;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public UserDTO(String name, String lastName, String emailAddress, String phoneNumber) {
-        this.firstName = name;
+    public void setLastName(String lastName) {
         this.lastName = lastName;
-        this.emailAddress = emailAddress;
-        this.phoneNumber = phoneNumber;
-    }
-    public UserDTO() {
     }
 
+    public String getEmail() {
+        return email;
+    }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    // You can also override toString() method for a better representation if needed
+    @Override
+    public String toString() {
+        return "BookingUserDTO{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }
+
+
+
+

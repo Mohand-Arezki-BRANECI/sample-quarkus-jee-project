@@ -71,19 +71,18 @@ public class CamelRoutes extends RouteBuilder {
                 .log(LoggingLevel.INFO,"${body}");
 
         from("direct:bookingFront")
-
                 .choice()
                 .when(header("loginStatus").isEqualTo("bookingLoginError"))
                 .bean(eCommerce, "showErrorMessage").stop()
                 .when(header("loginStatus").isEqualTo("bookingLoginSuccess"))
-                .unmarshal().json(UserDTO.class)
-                .bean(eCommerce, "showSuccessMessage('Welcome to Booking ${body.getName()} ${body.getLastName()}')")
+                .bean(eCommerce, "showSuccessMessage('Welcome to Booking ${body.getFirstName()} ${body.getLastName()}')")
                 .bean(eCommerce, "askForHotelLocation")
                 .bean(eCommerce, "askForDates")
                 .bean(eCommerce, "askForNumberOfGuests")
+                .bean(eCommerce, "askForHotel")
                 .bean(eCommerce, "askForOptions")
                 .bean(eCommerce, "displayReservationDetails")
-                .bean(eCommerce, "showSuccessMessage()");
+                .bean(eCommerce, "showSuccessMessage(${body.toString()})");
 
 
 

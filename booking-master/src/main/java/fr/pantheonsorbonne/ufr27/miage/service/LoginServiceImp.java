@@ -23,4 +23,9 @@ public class LoginServiceImp implements LoginService {
         }
         throw new UserNotFoundException("User not found for email: " + email + " \nPlease check email and password.");
     }
+
+    @Override
+    public User getByEmail(String email){
+        return userDAO.getUser(email);
+    }
 }
