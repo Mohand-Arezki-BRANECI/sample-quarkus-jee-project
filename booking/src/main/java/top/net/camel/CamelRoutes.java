@@ -64,14 +64,37 @@ public class CamelRoutes extends RouteBuilder {
 
         from("sjms2:topic:bookingPaymentResponse")
                 .unmarshal().json(TransactionDTO.class)
-                .log(LoggingLevel.INFO,"${body}");
+                .log(LoggingLevel.INFO,"Your Reservation has been payed for. Thanks for using our Service.");
 
         from("sjms2:topic:cancellationPaymentResponse")
                 .unmarshal().json(TransactionDTO.class)
                 .log(LoggingLevel.INFO,"${body}");
 
+        from("direct:bookingFront")
+                .choice()
+                .when(header("loginStatus").isEqualTo("bookingLoginError"))
+                .bean(eCommerce, "showErrorMessage").stop()
+                .when(header("loginStatus").isEqualTo("bookingLoginSuccess"))
+                .bean(eCommerce, "showSuccessMessage('Welcome to Booking ${body.getFirstName()} ${body.getLastName()}')")
+                .bean(eCommerce, "askForHotelLocation")
+                .bean(eCommerce, "askForDates")
+                .bean(eCommerce, "askForNumberOfGuests")
+                .bean(eCommerce, "askForHotel")
+                .bean(eCommerce, "askForOptions")
+                .bean(eCommerce, "displayReservationDetails")
+                .bean(eCommerce, "showSuccessMessage(${body" +
+                        "})");
 
 
+        from("sjms2:topic:hotelReservationResponse")
+                .log("Reservation has been create. Payment needed: ${body}")
+                .bean(eCommerce, "sendPayment(${body})");
+
+
+
+
+
+        /*
         from("direct:cli")//
                 .marshal().json()//, "onBookedResponseReceived"
                 .to("sjms2:" + jmsPrefix + "booking?exchangePattern=InOut")//
@@ -93,6 +116,8 @@ public class CamelRoutes extends RouteBuilder {
                 .otherwise()
                 .unmarshal().json(TicketEmissionData.class)
                 .bean(ticketingService, "notifyCreatedTicket");
+
+         */
 
 
         from("sjms2:topic:" + jmsPrefix + "cancellation")

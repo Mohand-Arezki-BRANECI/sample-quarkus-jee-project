@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface AvailabilityService {
 
-
     List<Availability> getConsistentlyAvailableHotels(int numberOfGuests, Date date, Date endDate, int locationId);
 }

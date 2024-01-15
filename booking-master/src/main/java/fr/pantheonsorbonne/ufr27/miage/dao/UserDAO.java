@@ -6,4 +6,6 @@ import java.util.Collection;
 public interface UserDAO {
     Collection<User> getAllUser();
 
+    User getUser(String email);
+
 }

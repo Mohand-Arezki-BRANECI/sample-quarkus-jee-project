@@ -13,5 +13,4 @@ public interface UserInterface {
 
     String getCustomerEmail();
 
-    Booking getBookingFromOperator();
 }

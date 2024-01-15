@@ -33,6 +33,7 @@ public class CamelRoutes extends RouteBuilder {
 
         from("sjms2:topic:transactionTopic")
                 .unmarshal().json(TransactionDTO.class)
+                .log("${body}")
                 .choice()
                     .when().method(TransactionGateway.class, "isSendingAndReceiving")
                         .to("direct:processSendingAndReceiving")

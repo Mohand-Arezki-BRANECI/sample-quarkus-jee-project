@@ -36,6 +36,8 @@ public class Main implements Runnable {
 
                 // booking-cli
                 eCommerce.askToLogIn();
+
+                /*
                 eCommerce.askForHotelLocation();
                 eCommerce.askForDates();
                 eCommerce.askForNumberOfGuests();
@@ -43,9 +45,13 @@ public class Main implements Runnable {
                 eCommerce.askForOptions();
                 eCommerce.displayReservationDetails();
 
+
+
                 // bank
                 eCommerce.sendPayment();
                 eCommerce.cancelReservation();
+
+                 */
 
             } catch (Exception e) {
                 eCommerce.showErrorMessage(e.getMessage());

@@ -1,5 +1,6 @@
 package top.net.cli;
 
+import fr.pantheonsorbonne.ufr27.miage.dto.ReservationRequestDTO;
 import org.beryx.textio.TextIO;
 
 import java.text.ParseException;
@@ -10,7 +11,6 @@ public interface UserInterfaceCLI extends BiConsumer<TextIO, RunnerData>, UserIn
 
 
     // booking-cli
-    void displayAvailableGigsToCli();
     void askForHotelLocation();
     void askForDates() throws ParseException;
     void askForNumberOfGuests();

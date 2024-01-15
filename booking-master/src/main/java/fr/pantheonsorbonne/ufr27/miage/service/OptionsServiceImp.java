@@ -29,4 +29,17 @@ public class OptionsServiceImp implements OptionsService{
         }
         return hotelOptions;
     }
+
+    @Override
+    public List<fr.pantheonsorbonne.ufr27.miage.model.HotelOption> getHotelOptionsModel(int hotelId){
+
+        List<fr.pantheonsorbonne.ufr27.miage.model.HotelOption> hotelOptions = new ArrayList<>();
+        for (fr.pantheonsorbonne.ufr27.miage.model.HotelOption hotelOption : hotelOptionsDAO.getHotelOptions()){
+            if(hotelOption.getHotel().getId() == hotelId){
+                hotelOptions.add(hotelOption);
+            }
+        }
+        return hotelOptions;
+    }
+
 }

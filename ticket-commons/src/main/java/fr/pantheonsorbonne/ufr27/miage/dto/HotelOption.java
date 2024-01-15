@@ -8,10 +8,8 @@ public class HotelOption {
 
     private double optionPrice;
 
-
     public HotelOption() {}
     public HotelOption(int hotelId, String name, double optionPrice) {
-
         this.hotelId = hotelId;
         this.optionPrice = optionPrice;
         this.name = name;

@@ -6,6 +6,8 @@ import fr.pantheonsorbonne.ufr27.miage.dto.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import org.apache.camel.CamelContext;
+import org.apache.camel.ProducerTemplate;
 import org.beryx.textio.TextIO;
 import org.beryx.textio.TextTerminal;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -17,8 +19,10 @@ import jakarta.ws.rs.core.Response;
 
 
 import java.awt.*;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -55,7 +59,14 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     @RestClient
     BankServiceIreland bankServiceIreland;
 
+    @Inject
+    @RestClient
+    ReservationService reservationService;
 
+
+
+    @Inject
+    CamelContext context;
 
     @Inject
     @RestClient
@@ -65,8 +76,9 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     TextTerminal<?> terminal;
     TextIO textIO;
 
-    @ConfigProperty(name = "fr.pantheonsorbonne.ufr27.miage.vendorId")
-    Integer vendorId;
+
+    private BookingUserDTO bookingUser;
+    private ReservationRequestDTO reservationRequest;
     private String startDateString;
     private String endDateString;
     private int nbGuests;
@@ -76,22 +88,14 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
     private String selectedHotelName;
     private Availability selectedAvailability;
     private List<HotelOption> selectedOptions = new ArrayList<>();;
-    public void displayAvailableGigsToCli() {
-        terminal.println("VendorId=" + vendorId);
-        for (Gig gig : vendorService.getGigs(vendorId)) {
-            terminal.println("[" + gig.getVenueId() + "] " + gig.getArtistName() + " " + gig.getDate().format(DateTimeFormatter.ISO_DATE) + " " + gig.getLocation());
-        }
-    }
-
 
     public void askForHotelLocation() {
-        terminal.println("Welcome to Booking");
         terminal.println("Please select from the location we provide here");
 
         Collection<HotelLocation> hotelLocations = locationService.getHotelLocations();
 
         for (HotelLocation hotelLocation : hotelLocations) {
-            terminal.println("[" + hotelLocation.getLocationName() + "] " + hotelLocation.getLongitude() + " " + hotelLocation.getLatitude());
+            terminal.println("[" + hotelLocation.getLocationName() + "]");
         }
 
         String selectedHotelLocation = textIO.newStringInputReader().withPossibleValues(hotelLocations.stream().map(g -> g.getLocationName()).collect(Collectors.toList())).read("Which location?");
@@ -114,6 +118,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
             terminal.println("Invalid selection. Please try again.");
             // Handle the case where the selected location is not found.
         }
+
     }
 
 
@@ -148,7 +153,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Available options for the selected hotel:");
 
         for (HotelOption hotelOption : hotelOptions) {
-            terminal.println(  hotelOption.getName());
+            terminal.println( hotelOption.getName());
         }
 
 
@@ -172,30 +177,35 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         // Process the selected options as needed
         processSelectedOptions();
     }
-
     public void askToLogIn() {
-        terminal.println("In order to complete your reservation, you must log in!");
-        String userInput = textIO.newStringInputReader().read("Do you already have an account(yes/no)?");
-
-        if (userInput.equals("yes")) {
-            terminal.println("You can log in now:");
-            String emailInput = textIO.newStringInputReader().read("Email:");
-            String passwordInput = textIO.newStringInputReader().read("Password:");
-            try {
-                Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
-                if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
-                    String successMessage = loginResponse.readEntity(String.class);
-                    terminal.println(successMessage);
-                } else {
-                    String errorMessage = loginResponse.readEntity(String.class);
-                    showErrorMessage("Login failed. " + errorMessage);
+        terminal.println("Please login with your credentials:");
+        String emailInput = textIO.newStringInputReader().read("Email:");
+        String passwordInput = textIO.newStringInputReader().read("Password:");
+        try {
+            Response loginResponse = loginService.loginToUserAccount(emailInput, passwordInput);
+            if (loginResponse.getStatus() == Response.Status.OK.getStatusCode()) {
+               this.bookingUser = loginResponse.readEntity(BookingUserDTO.class);
+                terminal.println(this.bookingUser.getFirstName());
+                terminal.println(this.bookingUser.getEmail());
+                try (ProducerTemplate producer = context.createProducerTemplate()) {
+                    producer.sendBodyAndHeader("direct:bookingFront", bookingUser, "loginStatus", "bookingLoginSuccess");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-            } catch (WebApplicationException e) {
-                String respStr = e.getResponse().readEntity(String.class);
-                terminal.println(respStr);
+            } else {
+                String errorMessage = loginResponse.readEntity(String.class);
+                try (ProducerTemplate producer = context.createProducerTemplate()) {
+                    producer.sendBodyAndHeader("direct:bookingFront", errorMessage, "loginStatus", "bookingLoginError");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+
+        } catch (WebApplicationException e) {
+            String respStr = e.getResponse().readEntity(String.class);
+            terminal.println(respStr);
         }
+
 
     }
 
@@ -208,13 +218,33 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
 
     private void processSelectedOptions() {
         terminal.println("Selected Options:");
-
         for (HotelOption option : this.selectedOptions) {
-            terminal.println( "Name: " + option.getName() + ", Price: " + option.getOptionPrice());
+            terminal.println( "Name: " + option.getName() + "d, Price: " + option.getOptionPrice());
         }
     }
 
     public void displayReservationDetails() {
+        this.reservationRequest = new ReservationRequestDTO();
+        reservationRequest.setUser(bookingUser);
+        reservationRequest.setFrom(LocalDate.parse(startDateString));
+        reservationRequest.setTo(LocalDate.parse(endDateString));
+        reservationRequest.setGuests(nbGuests);
+        reservationRequest.setOptionsNames(selectedOptions.stream().map(HotelOption::getName).collect(Collectors.toList()));
+
+        terminal.println("Your reservation details are:");
+        terminal.println(this.reservationRequest.toString());
+
+        String confirmation = textIO.newStringInputReader().read("Would you like to confirm the payment? [Y/N]");
+        if(confirmation.equals("Y") || confirmation.equals("y")){
+            try {
+                reservationService.createReservation(this.selectedHotelId, reservationRequest);
+            }catch (WebApplicationException e) {
+                String respStr = e.getResponse().readEntity(String.class);
+                this.showErrorMessage(respStr);
+            }
+        }
+
+        /*
         double optionsPrice = 0.0;
         terminal.println("Your reservation details are:");
         terminal.println("Hotel name: " + selectedHotelName);
@@ -229,6 +259,10 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         terminal.println("Options price " + optionsPrice);
         double totalPrice = optionsPrice + selectedAvailability.getPrice();
         terminal.println("Final price:   "+ totalPrice);
+         */
+
+
+
 
     }
 
@@ -282,16 +316,6 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
     }
 
-
-    public Booking getBookingFromOperator(){
-        terminal.println("Which Gig to book?");
-
-        Integer venueId = textIO.newIntInputReader().withPossibleValues(vendorService.getGigs(vendorId).stream().map(g -> g.getVenueId()).collect(Collectors.toList())).read("Which venue?");
-        Integer sittingCount = textIO.newIntInputReader().read("How many seats?");
-        Integer standingCount = textIO.newIntInputReader().read("How many pit tickets?");
-
-        return new Booking(vendorId,venueId,standingCount,sittingCount);
-    }
 
     public void cancelReservation(){
         String reservationId = textIO.newStringInputReader().read("Which of your reservations would you like to cancel?");
@@ -348,7 +372,7 @@ public class UserInterfaceCLIImpl implements UserInterfaceCLI {
         }
     }
 
-    public void sendPayment(){
+    public void sendPayment(/*ReservationResponse response */){
         terminal.println("We received the following transaction Request in your name from Booking: SHOW STUFF");
         terminal.println("To authorise the transaction pleas login to your MIAGE bank account!");
 

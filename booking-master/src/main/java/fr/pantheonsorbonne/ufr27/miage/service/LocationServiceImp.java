@@ -3,6 +3,7 @@ package fr.pantheonsorbonne.ufr27.miage.service;
 import fr.pantheonsorbonne.ufr27.miage.dao.HotelLocationDAO;
 import fr.pantheonsorbonne.ufr27.miage.dto.HotelLocation;
 
+import fr.pantheonsorbonne.ufr27.miage.model.User;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
