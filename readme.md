@@ -1,6 +1,6 @@
 ## Objectifs du système à modéliser
 
-On propose de modéliser un système de réservation d'hotellerie (Booking.com) pouvant supporter plusieurs hotels. Le système Booking gère les hotels, réservations et les utilisateurs (une réservation concerne un utilisateur et un hotel). Chaque hotel (bdd de l'hotel) à une adresse, chambres, options specials, réservations, utilisateurs.
+On propose  de modéliser un système de réservation d'hotellerie (Booking.com) pouvant supporter plusieurs hotels. Le système Booking gère les hotels, réservations et les utilisateurs (une réservation concerne un utilisateur et un hotel). Chaque hotel (bdd de l'hotel) à une adresse, chambres, options specials, réservations, utilisateurs.
 Chaque chambre a une capacité maximale et prix (possiblité d'ajouté un sys de paiment/ simuler un paiment).
 ### Cas Normal 
 Une fois arrivée sur la plateform, l'utilisateurs fait une recheche d'hotels soit en précisant la ville et les dates et nombres de personnes(champs obj).
